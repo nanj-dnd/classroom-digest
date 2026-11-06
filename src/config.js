@@ -6,9 +6,11 @@ export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '
 export const DATA_DIR = path.join(ROOT, 'data');
 export const COURSES_DIR = path.join(ROOT, 'courses');
 
+const ENV_FILE = path.join(ROOT, '.env');
+
 // Minimal .env loader — no dependency, no surprises.
 function loadEnv() {
-  const f = path.join(ROOT, '.env');
+  const f = ENV_FILE;
   if (!fs.existsSync(f)) return;
   for (const line of fs.readFileSync(f, 'utf8').split('\n')) {
     const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*)\s*$/);
@@ -41,7 +43,23 @@ export const config = {
   waTo: process.env.WA_TO || '',
   waTemplate: process.env.WA_TEMPLATE || 'college_digest',
   waLang: process.env.WA_LANG || 'en',
+
+  // The study buttons. Each student brings their own key.
+  anthropicKey: process.env.ANTHROPIC_API_KEY || '',
+  claudeModel: process.env.CLAUDE_MODEL || 'claude-opus-5-5',
+  appPort: Number(process.env.APP_PORT || 8420),
 };
+
+// Write one KEY=value into .env (the app's settings page), and apply it live.
+export function setEnv(key, value) {
+  const clean = String(value ?? '').replace(/[\r\n]/g, '').trim();
+  const lines = fs.existsSync(ENV_FILE) ? fs.readFileSync(ENV_FILE, 'utf8').split('\n') : [];
+  const i = lines.findIndex((l) => l.match(/^\s*([A-Z0-9_]+)\s*=/)?.[1] === key);
+  while (lines.at(-1) === '') lines.pop();
+  if (i >= 0) lines[i] = `${key}=${clean}`; else lines.push(`${key}=${clean}`);
+  fs.writeFileSync(ENV_FILE, lines.join('\n') + '\n', { mode: 0o600 });
+  process.env[key] = clean;
+}
 
 // Course codes are how AMS names things; aliases are how you think of them.
 export const aliases = (() => {

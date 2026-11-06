@@ -2,30 +2,60 @@
 
 A college tracker for anyone whose courses run on Google Classroom.
 
-One email each morning: what's overdue, what's due, what professors posted that
-you haven't seen. Deadlines pushed to a "College" calendar. Assignment briefs
-and attachments pulled to disk so you can actually work on them locally.
+Sign in with Google and see what's overdue, what's due and what professors
+posted that you haven't seen. Briefs, slides and readings are pulled to disk,
+deadlines go to a "College" calendar, and three buttons help you study:
+**prepare me for a test**, **quiz me on this file**, **help me with this
+assignment**.
 
-## Setup
+## Quick start
 
-### 1. Google Cloud OAuth client (yours to do — ~10 min)
+You need [Node.js](https://nodejs.org) 18 or newer. Then:
 
-1. https://console.cloud.google.com/ → new project, call it anything.
-2. **APIs & Services → Library** → enable: **Google Classroom API**,
-   **Google Drive API**, **Google Calendar API**.
-3. **APIs & Services → OAuth consent screen** → External → fill the required
-   fields → under **Test users**, add the Google account your Classroom is on
-   (usually your college address).
-4. **Credentials → Create credentials → OAuth client ID → Desktop app** →
-   download the JSON and save it here as `credentials.json`
-   (or run `node src/index.js adopt` to find it in ~/Downloads for you).
+    git clone https://github.com/nanj-dnd/classroom-digest.git
+    cd classroom-digest
+    npm install
+    npm start
 
-> **Testing status expires refresh tokens every 7 days.** The tool fails loudly
-> when that happens — rerun `npm run auth`. To stop it, publish the consent
-> screen to Production (self-verification is fine for a personal-use app that
-> only you sign into).
+Your browser opens. Click **Sign in with Google** with the account your
+Classroom is on, and your courses sync. That's the whole setup. Everything runs
+on your computer; the Google sign-in, your files and your Claude key stay in
+this folder.
 
-### 2. Config
+Google will say the app **isn't verified** (it hasn't been through Google's
+review yet). Click **Advanced**, then the **Go to …** link. Until it's verified,
+Google caps the shared sign-in at 100 users; past that, use your own client
+(below).
+
+## Study buttons
+
+Paste a [Claude API key](https://console.anthropic.com/settings/keys) into
+**Settings** and three buttons appear:
+
+- **Prepare me for a test**, on each course: finds the next test from the
+  syllabus and announcements, ranks the topics, builds a day-by-day plan, then
+  quizzes you and sets fresh practice in the style of any past papers.
+- **Quiz me**, on every synced file: one question at a time, marked and
+  explained, harder as you go. Say "slide 12" to focus on one part. Slides go to
+  Claude as the actual PDF, so diagrams and scanned pages work.
+- **Help me with this**, on each assignment: explains the ideas, points to where
+  your course files teach them, breaks the task into steps and gives feedback on
+  your own drafts. It won't write the assignment for you.
+
+You pay Anthropic directly for what you use. The course files are cached
+between messages, so follow-ups cost a fraction of the first one. Set
+`CLAUDE_MODEL` in `.env` to use a different model.
+
+**AI-prohibited work stays off limits.** If an assignment's files say AI may
+not be used, the buttons disappear for every assignment in that course, its
+files are never sent to Claude, and the server refuses even if asked directly.
+
+## Nightly email digest (optional)
+
+The same sync can email you a digest every night and push deadlines to a
+"College" calendar without the app open.
+
+### Config
 
     cp .env.example .env
 
@@ -35,7 +65,7 @@ marked active.
 For WhatsApp delivery set `DIGEST_CHANNEL=whatsapp` and see [WHATSAPP.md](WHATSAPP.md).
 Set `SYNC_DRIVE=false` or `SYNC_CALENDAR=false` to drop those scopes.
 
-### 3. Your term (optional, but this is what makes it good)
+### Your term (optional, but this is what makes it good)
 
 Classroom knows assignments. It doesn't know your timetable, your exam dates or
 what your courses actually are. Three hand-kept files fill that in:
@@ -52,14 +82,12 @@ digest warns you once the exam period has passed.
 into `timetable.json`. It was written for one college's portal (it finds the
 table by its header text), so on yours it may need a tweak in `src/ams.js`.
 
-### 4. Authorize and test
+### Test it
 
-    node src/index.js doctor           # what's missing, before you auth
-    npm run auth
-    node src/index.js doctor           # verifies each scope group separately
+    node src/index.js doctor           # checks the sign-in and each permission
     node src/index.js digest --dry     # prints to terminal, writes data/preview.html, sends nothing
 
-### 5. Schedule it (macOS)
+### Schedule it (macOS)
 
     ./install-schedule.sh              # daily at 22:00 via launchd
 
@@ -84,6 +112,7 @@ rather than dying quietly. Logs: `data/digest.log`, `data/digest.err.log`.
 
 | Command | Does |
 |---|---|
+| `npm start` | The local app: sign-in, dashboard, study buttons |
 | `node src/index.js doctor` | Check credentials, token, and every scope group one by one |
 | `npm run auth` | Run the OAuth flow, store `data/token.json` |
 | `node src/index.js dump` | Write raw API responses to `data/raw-shapes.json` |
@@ -94,6 +123,23 @@ rather than dying quietly. Logs: `data/digest.log`, `data/digest.err.log`.
 | `node src/index.js digest --dry` | Full run, preview only, nothing sent, nothing marked seen |
 | `node src/index.js digest` | Full run and send |
 
+## Using your own Google client
+
+The repo ships a shared sign-in (`oauth-client.json`). To use your own instead,
+for example past the 100-user cap or if your college blocks the shared one:
+
+1. https://console.cloud.google.com/ → new project, call it anything.
+2. **APIs & Services → Library** → enable **Google Classroom API**,
+   **Google Drive API** and **Google Calendar API**.
+3. **OAuth consent screen** → External → fill the required fields → add the
+   Google account your Classroom is on under **Test users**.
+4. **Credentials → Create credentials → OAuth client ID → Desktop app** →
+   download the JSON and run `node src/index.js adopt` to move it into place
+   as `credentials.json`, which takes precedence over the shared one.
+
+> While the consent screen is in **Testing**, Google expires sign-ins every 7
+> days. Publishing it to Production stops that.
+
 ## If your college's admin blocks the app
 
 Education Workspace tenants can restrict third-party OAuth apps. Symptoms:
@@ -102,11 +148,14 @@ Education Workspace tenants can restrict third-party OAuth apps. Symptoms:
 - `drive.readonly` is a **restricted** scope and the likeliest to be blocked.
   Set `SYNC_DRIVE=false` and retry — deadlines, submissions, announcements and
   calendar all still work without it.
-- If even the Classroom scopes are blocked, ask IT to allowlist your client ID.
+- If even the Classroom scopes are blocked, ask IT to allowlist the client ID
+  (in `oauth-client.json`, or your own).
   Failing that, the fallback is a logged-in-browser scrape, which is worse.
 
 ## Layout
 
+    src/app.js        The local app server (npm start)
+    src/tutor.js      Study buttons: picks the course files, streams Claude's reply
     src/auth.js       OAuth, scope groups, loud token-expiry failure
     src/classroom.js  Courses, coursework, own submissions, announcements
     src/triage.js     Outstanding-work ranking into overdue/today/soon/week
@@ -119,13 +168,17 @@ Education Workspace tenants can restrict third-party OAuth apps. Symptoms:
     src/mail.js       Resend send (checks `error`, which does not throw)
     data/             tokens, state, snapshot, logs — gitignored
     courses/          synced briefs and readings — gitignored
+    web/template.html The dashboard, shared by the app and the hosted snapshot
+    web/app/          The app's welcome page, toolbar and tutor drawer
     web/              Optional private dashboard on Vercel, behind email OTP
 
 ## AI-prohibited assignments
 
 If an assignment's files say AI use is not allowed, sync writes
-`DO-NOT-FEED-TO-AI.md` into its folder and the digest and dashboard flag it.
-That's a reminder for you, not an enforcement mechanism.
+`DO-NOT-FEED-TO-AI.md` into its folder, the digest and dashboard flag it, and
+the study buttons stay off for that course's assignments. Detection reads the
+files' wording, so it can miss a rule that's only stated in class: check your
+course's policy yourself.
 
 ## License
 

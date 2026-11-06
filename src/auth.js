@@ -6,6 +6,10 @@ import { ROOT, DATA_DIR, config } from './config.js';
 
 const TOKEN_PATH = path.join(DATA_DIR, 'token.json');
 const CRED_PATH = path.join(ROOT, 'credentials.json');
+// The shared Desktop-app client that ships with the repo, so nobody has to make
+// their own Google Cloud project. Google treats installed-app secrets as public.
+// A credentials.json of your own takes precedence.
+const SHARED_PATH = path.join(ROOT, 'oauth-client.json');
 const PREFERRED_PORT = 8419;
 
 // Grouped so that if your Workspace admin blocks one group, the rest still work.
@@ -30,14 +34,17 @@ export function activeScopes() {
   ];
 }
 
+export const hasToken = () => fs.existsSync(TOKEN_PATH);
+
 function credentials() {
-  if (!fs.existsSync(CRED_PATH)) {
+  const file = [CRED_PATH, SHARED_PATH].find((f) => fs.existsSync(f));
+  if (!file) {
     throw new Error(
-      `Missing credentials.json at ${CRED_PATH}.\n` +
+      `No OAuth client: neither credentials.json nor oauth-client.json exists in ${ROOT}.\n` +
       `Download a Desktop-app OAuth client, then run: node src/index.js adopt`
     );
   }
-  const raw = JSON.parse(fs.readFileSync(CRED_PATH, 'utf8'));
+  const raw = JSON.parse(fs.readFileSync(file, 'utf8'));
   const c = raw.installed || raw.web;
   if (!c) throw new Error('credentials.json is not a Desktop-app OAuth client.');
   return c;
@@ -65,6 +72,18 @@ function listenOnFreePort(server) {
       resolve(server.address().port);
     });
   });
+}
+
+// For the local app, which already runs a server and handles /callback itself.
+export function authUrl(redirectUri, state) {
+  return oauthClient(redirectUri).generateAuthUrl({
+    access_type: 'offline', prompt: 'consent', scope: activeScopes(), state,
+  });
+}
+
+export async function exchangeCode(code, redirectUri) {
+  const { tokens } = await oauthClient(redirectUri).getToken(code);
+  fs.writeFileSync(TOKEN_PATH, JSON.stringify(tokens, null, 2), { mode: 0o600 });
 }
 
 export async function authorize() {

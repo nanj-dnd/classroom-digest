@@ -7,12 +7,14 @@
     "college": "./src/index.js"
   },
   "scripts": {
+    "start": "node src/index.js app",
     "auth": "node src/index.js auth",
     "sync": "node src/index.js sync",
     "digest": "node src/index.js digest",
     "run": "node src/index.js run"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.6.0",
     "cheerio": "^1.2.0",
     "googleapis": "^144.0.0",
     "open": "^10.1.0",

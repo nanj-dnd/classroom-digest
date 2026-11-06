@@ -90,6 +90,11 @@ footer{color:var(--faint);font-size:12px;margin-top:14px}
 <body><div class="page" id="app"></div>
 <script>
 const DATA = /*__DATA__*/null;
+// The local app (npm start) adds study buttons; the deployed snapshot has none.
+const APP = !!window.CLASSROOM_APP;
+const act=(kind,data,label)=>`<button class="act" data-act="${kind}" ${Object.entries(data).map(([k,v])=>`data-${k}="${esc(v)}"`).join(' ')}>${label}</button>`;
+// A PDF's .txt sidecar and the sync's marker files aren't worth quizzing on.
+const quizzable=(files)=>{const n=new Set(files.map(f=>f.name));return files.filter(f=>!/\.NO-TEXT-LAYER\.md$|^DO-NOT-FEED-TO-AI\.md$|\.(png|jpe?g|gif|csv)$/i.test(f.name)&&!(/\.txt$/i.test(f.name)&&n.has(f.name.replace(/\.txt$/i,'.pdf'))));};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const d=s=>s?new Date(s):null;
 const fmtDay=x=>x.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
@@ -109,6 +114,9 @@ const ORDER=['overdue','today','soon','week','later','undated'];
 function render(){
   const now=new Date(), P=DATA, o=[];
   if(!P){document.getElementById('app').innerHTML='<p class="empty">No data yet.</p>';return;}
+  // One AI-prohibited assignment locks AI help for that course's assignments.
+  const locked=new Set((P.library||[]).filter(c=>c.items.some(i=>i.kind==='assignment'&&i.noAI)).map(c=>c.course));
+  const aiOk=(it,course)=>!it.noAI&&!(it.kind==='assignment'&&locked.has(course));
 
   const open=ORDER.reduce((n,b)=>n+(P.buckets[b]||[]).length,0);
   const overdue=(P.buckets.overdue||[]).length, dueToday=(P.buckets.today||[]).length;
@@ -134,6 +142,13 @@ function render(){
     if(c.tomorrow.length){o.push(`<h2>${P.evening?'The day after':'Tomorrow'}</h2>`+c.tomorrow.map(row).join(''));}
   }
 
+  // Study: one test-prep button per course with synced files.
+  if(APP&&P.library&&P.library.length){
+    o.push('<h2>Study</h2><p class="hint">Uses your course files and syllabus. Runs on your own Claude key.</p>');
+    for(const c of P.library)
+      o.push(`<div class="line"><span class="name" style="flex:1">${esc(c.course)}</span>${act('prep',{course:c.course,label:c.course+' · test prep'},'Prepare me for a test')}</div>`);
+  }
+
   // Tasks
   const anyTasks=ORDER.some(b=>(P.buckets[b]||[]).length);
   if(anyTasks){
@@ -143,7 +158,8 @@ function render(){
       o.push(`<p class="hint">${esc(LABEL[b])}</p>`);
       for(const i of list)
         o.push(`<div class="task"><span class="dot ${b}"></span><div><a href="${esc(i.link)}" target="_blank" rel="noopener">${esc(i.title)}</a>
-          <div class="meta">${esc(i.course)} · ${esc(rel(d(i.due),now))}${i.points?' · '+esc(i.points)+' pts':''}${i.started?' · draft started':''}${i.noAI?' · <b style="color:var(--red)">no AI permitted</b>':''}</div></div></div>`);
+          <div class="meta">${esc(i.course)} · ${esc(rel(d(i.due),now))}${i.points?' · '+esc(i.points)+' pts':''}${i.started?' · draft started':''}${i.noAI?' · <b style="color:var(--red)">no AI permitted</b>':''}</div>
+          ${APP&&aiOk({...i,kind:'assignment'},i.course)?`<div class="acts">${act('help',{link:i.link,label:i.title},'Help me with this')}</div>`:''}</div></div>`);
     }
   }
 
@@ -210,7 +226,9 @@ function render(){
           <span class="tag" style="margin-left:6px">${esc(it.kind)}</span>
           ${it.noAI?'<span class="tag" style="margin-left:4px;color:var(--red);border-color:var(--red)">no AI</span>':''}
           ${it.when?`<span class="hint" style="display:inline;margin-left:6px">${esc(fmtDay(d(it.when)))}</span>`:''}
-          ${it.files.length?`<div class="hint" style="margin-top:3px">${it.files.map(f=>esc(f.name)+' ('+f.kb+' KB)').join(' · ')}</div>`:'<div class="hint" style="margin-top:3px">no files</div>'}
+          ${APP&&aiOk(it,c.course)&&quizzable(it.files).length
+            ?quizzable(it.files).map(f=>`<div class="file"><span class="hint" style="margin:0">${esc(f.name)} (${f.kb} KB)</span>${act('quiz',{file:f.path,label:f.name},'Quiz me')}</div>`).join('')
+            :it.files.length?`<div class="hint" style="margin-top:3px">${it.files.map(f=>esc(f.name)+' ('+f.kb+' KB)').join(' · ')}</div>`:'<div class="hint" style="margin-top:3px">no files</div>'}
         </div>`);
       }
       o.push('</div></details>');
@@ -222,7 +240,7 @@ function render(){
     for(const g of P.graded.slice(0,8)) o.push(`<div class="kv" style="padding:7px 4px"><span>${esc(g.title)} · ${esc(g.course)}</span><b>${esc(g.grade)}${g.max?'/'+esc(g.max):''}</b></div>`);
   }
 
-  o.push(`<hr><footer>Snapshot from ${esc(d(P.generatedAt).toLocaleString())} · refreshed nightly at 22:00</footer>`);
+  o.push(`<hr><footer>Snapshot from ${esc(d(P.generatedAt).toLocaleString())}${APP?'':' · refreshed nightly at 22:00'}</footer>`);
   document.getElementById('app').innerHTML=o.join('');
 }
 render();

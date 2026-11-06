@@ -68,7 +68,10 @@ async function run({ send, dry }) {
 
   // Static dashboard snapshot, regenerated on every run.
   try {
-    const file = writeSite(buildPayload({ byBucket, items, graded, announcements, today, tomorrow, upcoming, unresolved, week, mentioned, evening, anchor, courses, stale, now }));
+    const payload = buildPayload({ byBucket, items, graded, announcements, today, tomorrow, upcoming, unresolved, week, mentioned, evening, anchor, courses, stale, now });
+    // The local app reads this one; the deployed site reads web/api/_payload.js.
+    fs.writeFileSync(path.join(DATA_DIR, 'payload.json'), JSON.stringify(payload));
+    const file = writeSite(payload);
     console.log(`Dashboard written to ${file}`);
   } catch (e) {
     console.warn(`Could not build dashboard: ${e.message}`);
@@ -130,7 +133,8 @@ const cmd = process.argv[2] || 'run';
 const flags = new Set(process.argv.slice(3));
 
 try {
-  if (cmd === 'auth') await authorize();
+  if (cmd === 'app' || cmd === 'start') await (await import('./app.js')).startApp();
+  else if (cmd === 'auth') await authorize();
   else if (cmd === 'timetable') {
     const file = process.argv[3];
     if (!file) { console.log('usage: college timetable <saved-ams-page.html> ["Term Name"]'); process.exit(1); }
@@ -165,7 +169,7 @@ try {
   else if (cmd === 'sync') await run({ send: false, dry: false });
   else if (cmd === 'digest' || cmd === 'run') await run({ send: !flags.has('--dry'), dry: flags.has('--dry') });
   else {
-    console.log('usage: college [adopt|doctor|auth|timetable <file.html>|requisites|find <text>|sync|dump|digest [--dry]]');
+    console.log('usage: college [app|adopt|doctor|auth|timetable <file.html>|requisites|find <text>|sync|dump|digest [--dry]]');
     process.exit(1);
   }
 } catch (e) {

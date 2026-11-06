@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Classroom Digest</title>
+<style>
+:root{--bg:#fff;--ink:#37352f;--muted:#787774;--line:#e9e9e7;--tint:#f7f6f3;--blue:#337ea9}
+@media (prefers-color-scheme:dark){:root{--bg:#191919;--ink:#d4d4d4;--muted:#9b9b9b;--line:#2f2f2f;--tint:#202020;--blue:#529cca}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.55;
+  font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,"Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:560px;margin:0 auto;padding:72px 24px}
+h1{font-size:36px;line-height:1.15;letter-spacing:-.02em;margin:0 0 10px}
+p{color:var(--muted);font-size:15px;margin:0 0 14px}
+.btn{display:inline-flex;align-items:center;gap:10px;margin:18px 0 26px;padding:11px 18px;border-radius:6px;
+  background:var(--ink);color:var(--bg);text-decoration:none;font-weight:600;font-size:15px}
+.btn:hover{opacity:.88}
+ul{padding-left:18px;margin:0 0 18px;font-size:14px;color:var(--muted)}
+li{margin-bottom:6px}
+.note{background:var(--tint);border-radius:6px;padding:14px 16px;font-size:13.5px;color:var(--muted)}
+.note b{color:var(--ink)}
+</style>
+</head>
+<body><div class="page">
+  <h1>Your courses, in one place.</h1>
+  <p>Sign in with the Google account your Classroom is on. Everything runs on this computer: your assignments, files and sign-in stay here.</p>
+  <a class="btn" href="/signin">Sign in with Google</a>
+  <ul>
+    <li>What's overdue, due soon, and new from professors</li>
+    <li>Briefs, slides and readings downloaded and searchable</li>
+    <li>Deadlines added to a "College" Google Calendar</li>
+    <li>Prepare me for a test, quiz me on a file, help me with an assignment (needs your own Claude API key)</li>
+  </ul>
+  <div class="note"><b>Seeing "Google hasn't verified this app"?</b> This is a free, open-source tool that hasn't been through Google's review yet. Click <b>Advanced</b>, then the <b>Go to …</b> link. It asks for read-only access to Classroom and Drive, and access to your calendar for deadlines.</div>
+</div></body>
+</html>

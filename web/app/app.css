@@ -1,0 +1,58 @@
+/* Local-app additions to template.html: the toolbar, study buttons and the
+   tutor drawer. Uses the template's own colour tokens. */
+
+.act{font:inherit;font-size:12.5px;font-weight:500;color:var(--blue);background:var(--bluebg);
+  border:0;border-radius:4px;padding:3px 9px;cursor:pointer;white-space:nowrap;flex:none}
+.act:hover{filter:brightness(.96)}
+.acts{margin-top:5px}
+.file{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:4px}
+.file .hint{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;gap:10px;padding:8px 16px;font-size:13px;color:var(--muted)}
+.bar .grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar button{font:inherit;font-size:13px;color:var(--ink);background:var(--tint);border:1px solid var(--line);
+  border-radius:4px;padding:3px 10px;cursor:pointer}
+.bar button:hover{background:var(--hover)}
+.spin{display:inline-block;width:10px;height:10px;border:2px solid var(--faint);border-top-color:transparent;
+  border-radius:50%;animation:spin .8s linear infinite;margin-right:6px;vertical-align:-1px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(520px,100vw);z-index:20;background:var(--bg);
+  border-left:1px solid var(--line);box-shadow:-12px 0 32px rgba(0,0,0,.08);display:flex;flex-direction:column;
+  transform:translateX(100%);transition:transform .18s ease}
+.drawer.open{transform:none}
+.drawer header{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.drawer header .title{flex:1;min-width:0;font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.drawer header button{font:inherit;font-size:18px;line-height:1;background:none;border:0;color:var(--muted);cursor:pointer;padding:2px 6px}
+.msgs{flex:1;overflow-y:auto;padding:16px 18px}
+.msg{font-size:14.5px;margin-bottom:16px}
+.msg.user{margin-left:40px;background:var(--tint);border-radius:8px;padding:9px 12px;white-space:pre-wrap}
+.msg.err{color:var(--red);background:var(--redbg);border-radius:6px;padding:9px 12px;font-size:13.5px}
+.msg p{margin:0 0 9px} .msg ul,.msg ol{margin:0 0 9px;padding-left:20px} .msg li{margin-bottom:4px}
+.msg h3,.msg h4{font-size:14.5px;margin:14px 0 6px}
+.msg code{font:12.5px ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--tint);padding:1px 4px;border-radius:3px}
+.msg pre{background:var(--tint);padding:10px;border-radius:6px;overflow-x:auto}
+.msg pre code{background:none;padding:0}
+.msg table{border-collapse:collapse;font-size:13px;margin:0 0 9px}
+.msg td,.msg th{border:1px solid var(--line);padding:4px 8px;text-align:left}
+.thinking{color:var(--faint);font-size:13px}
+.compose{border-top:1px solid var(--line);padding:12px 14px;display:flex;gap:8px;align-items:flex-end}
+.compose textarea{flex:1;font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);
+  border-radius:6px;padding:8px 10px;resize:none;min-height:40px;max-height:160px}
+.compose textarea:focus{outline:2px solid var(--bluebg);border-color:var(--blue)}
+.compose button{font:inherit;font-size:14px;font-weight:600;color:var(--bg);background:var(--ink);border:0;border-radius:6px;padding:9px 14px;cursor:pointer}
+.compose button:disabled{opacity:.4;cursor:default}
+
+.modal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center;padding:16px}
+.modal.open{display:flex}
+.modal .card{background:var(--bg);border-radius:8px;padding:22px;width:min(440px,100%);font-size:14px}
+.modal h3{margin:0 0 12px;font-size:17px}
+.modal label{display:block;font-weight:500;margin:14px 0 4px}
+.modal input{width:100%;font:inherit;font-size:14px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+.modal .help{color:var(--muted);font-size:12.5px;margin-top:4px}
+.modal .help a{color:var(--blue)}
+.modal .row{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:20px}
+.modal .row button{font:inherit;font-size:14px;border-radius:6px;padding:8px 14px;cursor:pointer;border:1px solid var(--line);background:var(--tint);color:var(--ink)}
+.modal .row button.primary{background:var(--ink);color:var(--bg);border-color:var(--ink);font-weight:600}
+.modal .row .link{background:none;border:0;color:var(--red);padding:0;font-size:13px}
