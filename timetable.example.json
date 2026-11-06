@@ -1,0 +1,61 @@
+{
+  "term": "Fall 2026",
+  "note": "Hand-written, or parsed with `node src/index.js timetable <saved-page.html>`.",
+  "courses": [
+    {
+      "code": "MATH-1010",
+      "title": "Calculus I",
+      "classroomName": "MATH-1010",
+      "section": "MATH-1010-1",
+      "faculty": [
+        "Prof. Example"
+      ],
+      "lsStatus": "Confirmed",
+      "ls": [
+        {
+          "day": "Mon",
+          "start": "10:00",
+          "end": "11:30"
+        },
+        {
+          "day": "Wed",
+          "start": "10:00",
+          "end": "11:30"
+        }
+      ],
+      "ds": {
+        "section": "MATH-1010-1-2",
+        "faculty": "TA Example",
+        "status": "Confirmed",
+        "slot": {
+          "day": "Fri",
+          "start": "14:00",
+          "end": "15:00"
+        }
+      }
+    },
+    {
+      "code": "ECO-1001",
+      "title": "Introduction to Economics",
+      "classroomName": "ECO-1001",
+      "section": "ECO-1001-1",
+      "faculty": [
+        "Prof. Sample"
+      ],
+      "lsStatus": "Confirmed",
+      "ls": [
+        {
+          "day": "Tue",
+          "start": "13:00",
+          "end": "14:30"
+        },
+        {
+          "day": "Thu",
+          "start": "13:00",
+          "end": "14:30"
+        }
+      ],
+      "ds": null
+    }
+  ]
+}

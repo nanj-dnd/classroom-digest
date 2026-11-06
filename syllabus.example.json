@@ -1,0 +1,106 @@
+{
+  "term": "Fall 2026",
+  "termStart": "2026-08-31",
+  "examPeriod": {
+    "from": "2026-12-07",
+    "to": "2026-12-18"
+  },
+  "breaks": [
+    {
+      "name": "Fall break",
+      "from": "2026-10-12",
+      "to": "2026-10-16"
+    }
+  ],
+  "holidays": [
+    {
+      "date": "2026-11-26",
+      "name": "Thanksgiving"
+    }
+  ],
+  "note": "Hand-extracted from your course syllabi. Every key below is optional.",
+  "courses": {
+    "MATH-1010": {
+      "source": "courses/math-1010/materials/syllabus/",
+      "instructor": "Prof. Example",
+      "text": "Stewart, Calculus, 9th ed.",
+      "grading": [
+        {
+          "what": "Two midterms",
+          "weight": "40% (20% each)"
+        },
+        {
+          "what": "Final exam",
+          "weight": "40%"
+        },
+        {
+          "what": "Weekly problem sets",
+          "weight": "20%"
+        }
+      ],
+      "attendance": "Not graded, but quizzes are in class.",
+      "requisites": [
+        "Problem sets are due Fridays at 23:59 on Classroom.",
+        "No late work without a dean's note."
+      ],
+      "recurring": [
+        {
+          "what": "Submit problem set",
+          "day": "Fri",
+          "by": "23:59"
+        }
+      ],
+      "exams": [
+        {
+          "name": "Midterm 1",
+          "date": "2026-10-02",
+          "time": "10:00–11:30",
+          "venue": "Room 101",
+          "covers": "Limits, derivatives"
+        },
+        {
+          "name": "Final exam",
+          "date": null,
+          "covers": "cumulative",
+          "note": "TBD within the exam period"
+        }
+      ],
+      "schedule": [
+        {
+          "date": "2026-08-31",
+          "topic": "Limits",
+          "reading": "Stewart 2.1–2.3"
+        },
+        {
+          "date": "2026-09-02",
+          "topic": "Continuity",
+          "reading": "Stewart 2.5",
+          "due": "PS-1"
+        }
+      ]
+    },
+    "ECO-1001": {
+      "instructor": "Prof. Sample",
+      "unofficial": true,
+      "note": "No syllabus posted — reconstructed from announcements.",
+      "weeks": [
+        {
+          "week": 1,
+          "A": "Scarcity and choice",
+          "B": "Opportunity cost",
+          "reading": "Ch. 1"
+        },
+        {
+          "week": 2,
+          "A": "Supply and demand",
+          "B": "Elasticity",
+          "reading": "Ch. 3–4"
+        }
+      ],
+      "weekPattern": {
+        "A": "Tue",
+        "B": "Thu"
+      }
+    }
+  }
+}

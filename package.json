@@ -1,0 +1,24 @@
+{
+  "name": "classroom-digest",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "college": "./src/index.js"
+  },
+  "scripts": {
+    "auth": "node src/index.js auth",
+    "sync": "node src/index.js sync",
+    "digest": "node src/index.js digest",
+    "run": "node src/index.js run"
+  },
+  "dependencies": {
+    "cheerio": "^1.2.0",
+    "googleapis": "^144.0.0",
+    "open": "^10.1.0",
+    "resend": "^4.0.0",
+    "unpdf": "^1.8.1"
+  },
+  "license": "MIT",
+  "description": "A morning digest for Google Classroom: overdue work, deadlines, calendar sync and synced readings."
+}

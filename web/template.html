@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>College</title>
+<style>
+:root{
+  --bg:#ffffff; --ink:#37352f; --muted:#787774; --faint:#9b9a97;
+  --line:#e9e9e7; --hover:#f1f1ef; --tint:#f7f6f3;
+  --red:#c4554d; --redbg:#fdebec; --amber:#cb912f; --amberbg:#fbf3db;
+  --blue:#337ea9; --bluebg:#e7f3f8; --green:#448361;
+}
+:root:not([data-theme="light"]){ @media (prefers-color-scheme:dark){
+  --bg:#191919; --ink:#d4d4d4; --muted:#9b9b9b; --faint:#6f6f6f;
+  --line:#2f2f2f; --hover:#252525; --tint:#202020;
+  --red:#ff7369; --redbg:#2d2020; --amber:#ffdc49; --amberbg:#2c2413;
+  --blue:#529cca; --bluebg:#1a2733; --green:#4dab9a;
+}}
+:root[data-theme="dark"]{
+  --bg:#191919; --ink:#d4d4d4; --muted:#9b9b9b; --faint:#6f6f6f;
+  --line:#2f2f2f; --hover:#252525; --tint:#202020;
+  --red:#ff7369; --redbg:#2d2020; --amber:#ffdc49; --amberbg:#2c2413;
+  --blue:#529cca; --bluebg:#1a2733; --green:#4dab9a;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.5;
+  font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,"Helvetica Neue",sans-serif;
+  -webkit-font-smoothing:antialiased}
+.page{max-width:720px;margin:0 auto;padding:56px 56px 96px}
+@media(max-width:640px){.page{padding:32px 20px 72px}}
+
+.eyebrow{font-size:12px;color:var(--faint);margin-bottom:10px}
+h1{font-size:40px;line-height:1.15;font-weight:700;letter-spacing:-.02em;margin:0 0 4px}
+@media(max-width:640px){h1{font-size:30px}}
+.sub{color:var(--muted);font-size:14px;margin:0 0 8px}
+
+h2{font-size:16px;font-weight:600;margin:38px 0 6px;letter-spacing:-.01em}
+.hint{font-size:12px;color:var(--faint);margin:0 0 8px}
+
+/* Notion-style callout */
+.callout{display:flex;gap:10px;padding:14px 16px;border-radius:4px;background:var(--tint);margin:6px 0 10px;font-size:14px}
+.callout.red{background:var(--redbg)} .callout.amber{background:var(--amberbg)} .callout.blue{background:var(--bluebg)}
+.callout .ico{flex:none;font-size:16px;line-height:1.4}
+.callout .body{min-width:0}
+.callout b{font-weight:600}
+.quote{color:var(--muted);font-size:13px;margin-top:5px;border-left:2px solid var(--line);padding-left:9px}
+
+/* rows */
+.line{display:flex;gap:12px;align-items:baseline;padding:7px 4px;border-radius:3px}
+.line:hover{background:var(--hover)}
+.line + .line{border-top:1px solid var(--line)}
+.t{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums;flex:none;min-width:98px}
+.name{font-weight:500;font-size:14px}
+.tag{font-size:11px;color:var(--faint);border:1px solid var(--line);border-radius:3px;padding:0 5px}
+
+.task{display:flex;gap:10px;padding:8px 4px;border-radius:3px;align-items:flex-start}
+.task:hover{background:var(--hover)}
+.task + .task{border-top:1px solid var(--line)}
+.dot{flex:none;width:7px;height:7px;border-radius:50%;margin-top:7px;background:var(--faint)}
+.dot.overdue,.dot.today{background:var(--red)} .dot.soon{background:var(--amber)} .dot.week{background:var(--blue)}
+.task a{color:var(--ink);text-decoration:none;font-weight:500;font-size:14.5px}
+.task a:hover{text-decoration:underline}
+.meta{font-size:12.5px;color:var(--muted);margin-top:1px}
+
+/* toggles */
+details{border-top:1px solid var(--line)}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{cursor:pointer;list-style:none;padding:10px 4px;font-size:14px;font-weight:500;
+  display:flex;align-items:center;gap:8px;border-radius:3px}
+summary::-webkit-details-marker{display:none}
+summary:hover{background:var(--hover)}
+summary::before{content:"›";display:inline-block;transition:transform .15s;color:var(--faint);font-size:16px}
+details[open]>summary::before{transform:rotate(90deg)}
+.inner{padding:2px 4px 14px 24px}
+.kv{display:flex;justify-content:space-between;gap:14px;font-size:13.5px;padding:3px 0;color:var(--muted)}
+.kv b{color:var(--ink);font-weight:600;white-space:nowrap}
+.inner li{font-size:13.5px;color:var(--muted);margin-bottom:5px}
+.inner ul{margin:8px 0 0;padding-left:18px}
+.read{font-size:13.5px;margin-top:7px}
+.read b{font-weight:600}
+
+hr{border:0;border-top:1px solid var(--line);margin:34px 0 0}
+footer{color:var(--faint);font-size:12px;margin-top:14px}
+.empty{color:var(--faint);font-size:14px;padding:6px 4px}
+</style>
+</head>
+<body><div class="page" id="app"></div>
+<script>
+const DATA = /*__DATA__*/null;
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const d=s=>s?new Date(s):null;
+const fmtDay=x=>x.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
+const fmtTime=x=>x.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+const mid=x=>new Date(x.getFullYear(),x.getMonth(),x.getDate());
+
+function rel(due,now){
+  if(!due) return 'no due date';
+  const h=(due-now)/36e5;
+  if(h<0){const n=Math.floor(-h/24);return n>=1?`${n} day${n>1?'s':''} overdue`:`${Math.floor(-h)}h overdue`;}
+  if(h<=24) return `in ${Math.max(1,Math.round(h))}h · ${fmtDay(due)} ${fmtTime(due)}`;
+  return `${fmtDay(due)} · ${fmtTime(due)}`;
+}
+const LABEL={overdue:'Overdue',today:'Next 24 hours',soon:'Next 3 days',week:'This week',later:'Later',undated:'No due date'};
+const ORDER=['overdue','today','soon','week','later','undated'];
+
+function render(){
+  const now=new Date(), P=DATA, o=[];
+  if(!P){document.getElementById('app').innerHTML='<p class="empty">No data yet.</p>';return;}
+
+  const open=ORDER.reduce((n,b)=>n+(P.buckets[b]||[]).length,0);
+  const overdue=(P.buckets.overdue||[]).length, dueToday=(P.buckets.today||[]).length;
+  const head=overdue?`${overdue} overdue`:dueToday?`${dueToday} due ${P.evening?'tomorrow':'today'}`:open?'Nothing urgent':'All clear';
+
+  o.push(`<div class="eyebrow">${esc(now.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}))}${P.week&&P.week.number?' · Week '+P.week.number:''}</div>`);
+  o.push(`<h1>${esc(head)}</h1>`);
+  o.push(`<p class="sub">${open} open ${open===1?'item':'items'} across your courses.</p>`);
+
+  if(P.stale) o.push(`<div class="callout red"><span class="ico">🗓️</span><div class="body">${esc(P.stale)}</div></div>`);
+
+  for(const u of P.unresolved)
+    o.push(`<div class="callout amber"><span class="ico">⏳</span><div class="body"><b>${esc(u.code)}</b> discussion session is still <b>${esc(u.status)}</b> — ${esc(u.slot.day)} ${esc(u.slot.start)}–${esc(u.slot.end)}, ${esc(u.faculty)}.</div></div>`);
+
+  // Classes
+  const c=P.classes, row=s=>`<div class="line"><span class="t">${esc(s.start)}–${esc(s.end)}</span><span class="name">${esc(s.code)}</span><span class="tag">${esc(s.kind)}</span>${s.status&&s.status!=='Confirmed'?`<span class="tag">${esc(s.status)}</span>`:''}</div>`;
+  if(c.upcoming){
+    o.push(`<h2>Next classes</h2><p class="hint">${esc(d(c.upcoming.date).toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}))}</p>`);
+    o.push(c.upcoming.sessions.map(row).join(''));
+  } else if(c.today.length||c.tomorrow.length){
+    o.push(`<h2>${P.evening?'Tomorrow':'Today'}</h2>`);
+    o.push(c.today.length?c.today.map(row).join(''):`<div class="empty">No classes ${P.evening?'tomorrow':'today'}.</div>`);
+    if(c.tomorrow.length){o.push(`<h2>${P.evening?'The day after':'Tomorrow'}</h2>`+c.tomorrow.map(row).join(''));}
+  }
+
+  // Tasks
+  const anyTasks=ORDER.some(b=>(P.buckets[b]||[]).length);
+  if(anyTasks){
+    o.push('<h2>To do</h2>');
+    for(const b of ORDER){
+      const list=P.buckets[b]||[]; if(!list.length) continue;
+      o.push(`<p class="hint">${esc(LABEL[b])}</p>`);
+      for(const i of list)
+        o.push(`<div class="task"><span class="dot ${b}"></span><div><a href="${esc(i.link)}" target="_blank" rel="noopener">${esc(i.title)}</a>
+          <div class="meta">${esc(i.course)} · ${esc(rel(d(i.due),now))}${i.points?' · '+esc(i.points)+' pts':''}${i.started?' · draft started':''}${i.noAI?' · <b style="color:var(--red)">no AI permitted</b>':''}</div></div></div>`);
+    }
+  }
+
+  // Prose deadlines
+  if(P.mentioned.length){
+    o.push('<h2>Mentioned in announcements</h2><p class="hint">Found in text, not set as Classroom assignments — worth checking.</p>');
+    for(const m of P.mentioned){
+      const n=Math.round((mid(d(m.date))-mid(now))/864e5);
+      o.push(`<div class="callout amber"><span class="ico">📌</span><div class="body"><b>${esc(m.course)}</b> · ${esc(fmtDay(d(m.date)))} (${n===0?'today':n===1?'tomorrow':n<0?Math.abs(n)+' days ago':'in '+n+' days'})
+        <div class="quote">${esc(m.quote)}</div></div></div>`);
+    }
+  }
+
+  // Week
+  if(P.week&&P.week.courses&&P.week.courses.length){
+    o.push(`<h2>This week</h2><p class="hint">${P.week.onBreak?esc(P.week.onBreak):esc(fmtDay(d(P.week.from)))+' – '+esc(fmtDay(d(P.week.to)))}</p>`);
+    for(const w of P.week.courses){
+      o.push(`<details open><summary>${w.link?`<a href="${esc(w.link)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(w.code)}</a>`:esc(w.code)}</summary><div class="inner">
+        ${w.fallback?`<div class="hint" style="margin:0 0 6px">${esc(w.fallback)}</div>`:''}
+        ${w.unofficial?`<div class="hint" style="margin:0 0 6px;color:var(--amber)">No syllabus posted — from announcements only.</div>`:''}
+        ${w.topics.map(t=>{const x=typeof t==='string'?{text:t}:t;
+          return x.link?`<div class="meta"><a href="${esc(x.link)}" target="_blank" rel="noopener" style="color:inherit">${esc(x.text)}</a></div>`
+                        :`<div class="meta">${esc(x.text)}</div>`;}).join('')}
+        ${w.readings.map(r=>`<div class="read"><b>Read</b> · ${esc(r)}</div>`).join('')}
+        ${w.due.map(x=>`<div class="read" style="color:var(--amber)"><b>Due</b> · ${esc(x)}</div>`).join('')}
+        ${w.notes.map(n=>`<div class="read" style="color:var(--red)">${esc(n)}</div>`).join('')}
+      </div></details>`);
+    }
+  }
+
+  if(P.announcements.length){
+    o.push('<h2>New announcements</h2>');
+    for(const a of P.announcements.slice(0,15)){
+      const t=a.text.replace(/\s+/g,' ');
+      o.push(`<details><summary>${esc(t.slice(0,72))}${t.length>72?'…':''}</summary><div class="inner">
+        <div class="meta">${esc(a.course)}${a.at?' · '+esc(fmtDay(d(a.at))):''}</div>
+        <div class="read">${esc(t)}</div>
+        <div style="margin-top:8px"><a href="${esc(a.link)}" target="_blank" rel="noopener" style="font-size:13px;color:var(--blue)">Open in Classroom</a></div>
+      </div></details>`);
+    }
+  }
+
+  if(P.requisites.length){
+    o.push('<h2>Course requirements</h2>');
+    for(const r of P.requisites){
+      o.push(`<details><summary>${r.link?`<a href="${esc(r.link)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(r.code)}</a>`:esc(r.code)}</summary><div class="inner">
+        ${r.note?`<div class="hint" style="margin:0 0 8px;color:var(--amber)">${esc(r.note)}</div>`:''}
+        ${r.grading.length?'':'<div class="hint" style="margin:0 0 8px">No grading breakdown published.</div>'}
+        ${r.grading.map(g=>`<div class="kv"><span>${esc(g.what)}</span><b>${esc(g.weight)}</b></div>`).join('')}
+        ${r.attendance?`<div class="read" style="color:var(--muted)">${esc(r.attendance)}</div>`:''}
+        <ul>${r.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div></details>`);
+    }
+  }
+
+  // Everything Classroom has, on one page, linked back to where it came from.
+  if(P.library&&P.library.length){
+    o.push('<h2>Library</h2><p class="hint">Every file synced from Classroom. Local copies live in <code>courses/</code>.</p>');
+    for(const c of P.library){
+      const n=c.items.reduce((k,i)=>k+i.files.length,0);
+      o.push(`<details><summary>${c.link?`<a href="${esc(c.link)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(c.course)}</a>`:esc(c.course)} <span class="tag">${c.items.length} items · ${n} files</span></summary><div class="inner">`);
+      for(const it of c.items){
+        o.push(`<div style="padding:6px 0;border-top:1px solid var(--line)">
+          <a href="${esc(it.link)}" target="_blank" rel="noopener" style="color:inherit;font-size:13.5px;font-weight:500">${esc(it.title)}</a>
+          <span class="tag" style="margin-left:6px">${esc(it.kind)}</span>
+          ${it.noAI?'<span class="tag" style="margin-left:4px;color:var(--red);border-color:var(--red)">no AI</span>':''}
+          ${it.when?`<span class="hint" style="display:inline;margin-left:6px">${esc(fmtDay(d(it.when)))}</span>`:''}
+          ${it.files.length?`<div class="hint" style="margin-top:3px">${it.files.map(f=>esc(f.name)+' ('+f.kb+' KB)').join(' · ')}</div>`:'<div class="hint" style="margin-top:3px">no files</div>'}
+        </div>`);
+      }
+      o.push('</div></details>');
+    }
+  }
+
+  if(P.graded.length){
+    o.push('<h2>Recently graded</h2>');
+    for(const g of P.graded.slice(0,8)) o.push(`<div class="kv" style="padding:7px 4px"><span>${esc(g.title)} · ${esc(g.course)}</span><b>${esc(g.grade)}${g.max?'/'+esc(g.max):''}</b></div>`);
+  }
+
+  o.push(`<hr><footer>Snapshot from ${esc(d(P.generatedAt).toLocaleString())} · refreshed nightly at 22:00</footer>`);
+  document.getElementById('app').innerHTML=o.join('');
+}
+render();
+</script></body></html>

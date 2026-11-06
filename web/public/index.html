@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><title>College</title>
+<style>
+:root{--bg:#fff;--panel:#f9fafb;--line:#eaecf0;--ink:#101828;--muted:#667085;--red:#b42318;--accent:#175cd3}
+:root:not([data-theme="light"]){@media(prefers-color-scheme:dark){--bg:#0c111d;--panel:#161b26;--line:#242b37;--ink:#f5f6f7;--muted:#94a2b8;--red:#f97066;--accent:#84caff}}
+:root[data-theme="dark"]{--bg:#0c111d;--panel:#161b26;--line:#242b37;--ink:#f5f6f7;--muted:#94a2b8;--red:#f97066;--accent:#84caff}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--ink);
+ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,sans-serif;padding:24px}
+.box{width:100%;max-width:360px}
+h1{font-size:26px;margin:0 0 6px;font-weight:650;letter-spacing:-.02em}
+p{color:var(--muted);font-size:14px;margin:0 0 20px}
+input{width:100%;padding:13px 14px;font-size:17px;border:1px solid var(--line);border-radius:9px;
+ background:var(--panel);color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:.18em;text-align:center}
+input:focus{outline:2px solid var(--accent);outline-offset:1px}
+button{width:100%;margin-top:10px;padding:13px;font-size:15px;font-weight:600;border:0;border-radius:9px;
+ background:var(--ink);color:var(--bg);cursor:pointer}
+button:disabled{opacity:.5;cursor:default}
+.msg{margin-top:12px;font-size:13px;min-height:18px}
+.err{color:var(--red)} .ok{color:var(--muted)}
+.hidden{display:none}
+</style></head>
+<body><div class="box">
+<h1>College</h1>
+<p id="lede">Send a sign-in code to your email.</p>
+<form id="send"><button type="submit" id="sendBtn">Email me a code</button></form>
+<form id="verify" class="hidden">
+  <input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" aria-label="6-digit code">
+  <button type="submit" id="verifyBtn">Sign in</button>
+</form>
+<div class="msg" id="msg"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id), msg=$('msg');
+const say=(t,cls='ok')=>{msg.className='msg '+cls;msg.textContent=t;};
+
+$('send').addEventListener('submit', async e=>{
+  e.preventDefault(); $('sendBtn').disabled=true; say('Sending…');
+  try{
+    const r=await fetch('/api/request-otp',{method:'POST'});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||'Could not send the code.');
+    $('send').classList.add('hidden'); $('verify').classList.remove('hidden');
+    $('lede').textContent='Check your email for a 6-digit code.';
+    say('Code sent. It expires in 10 minutes.'); $('code').focus();
+  }catch(err){ say(err.message,'err'); $('sendBtn').disabled=false; }
+});
+
+$('verify').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const code=$('code').value.trim();
+  if(!/^\d{6}$/.test(code)) return say('Enter the 6-digit code.','err');
+  $('verifyBtn').disabled=true; say('Checking…');
+  try{
+    const r=await fetch('/api/verify-otp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||'Wrong or expired code.');
+    location.href='/api/dashboard';
+  }catch(err){ say(err.message,'err'); $('verifyBtn').disabled=false; }
+});
+</script></body></html>
