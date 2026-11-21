@@ -70,8 +70,14 @@ export const prefsCookie = (p) => cookie(PREFS, seal(p), YEAR);
 // change their settings from a hidden form.
 export function sameOrigin(req) {
   const o = req.headers.origin;
-  if (!o) return false;
-  try { return new URL(o).host === req.headers.host; } catch { return false; }
+  if (o && o !== 'null') {
+    try { return new URL(o).host === req.headers.host; } catch { return false; }
+  }
+  // Our Referrer-Policy is no-referrer, and under it browsers send
+  // "Origin: null" on a plain <form> POST (the connect page's "Continue to
+  // Google"). Sec-Fetch-Site is unaffected by that policy and no page can set
+  // it, so it settles the question when Origin can't.
+  return req.headers['sec-fetch-site'] === 'same-origin';
 }
 
 export const origin = (req) => `${req.headers['x-forwarded-proto'] || 'https'}://${req.headers.host}`;
