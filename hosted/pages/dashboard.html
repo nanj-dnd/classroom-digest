@@ -197,6 +197,10 @@ body:not(.setup) .skip{display:none}
 .opt .t{font-weight:550}
 .opt .s{font-size:13px;color:var(--muted);margin-top:1px}
 .opt .tag{display:inline-block;font-size:11.5px;color:var(--faint);border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-left:6px;font-weight:400;vertical-align:1px}
+.egs{display:grid;gap:6px}
+.eg{padding:11px 14px;border-radius:10px;background:var(--panel)}
+.eg .t{font-weight:550}
+.eg .s{font-size:13px;color:var(--muted);margin-top:1px}
 .ob-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:28px;padding-top:18px;border-top:1px solid var(--line)}
 .ob-actions .status{flex:1;text-align:right}
 footer{max-width:880px;margin:0 auto;padding:0 24px 40px;font-size:12.5px;color:var(--faint)}
@@ -283,7 +287,8 @@ function startSetup() {
     tz: me.hasSettings ? me.tz : detectedTz,
   };
 }
-const progress = n => `<div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="${n}" aria-label="Setup step ${n} of 3">${[1,2,3].map(k => `<i class="${k <= n ? 'on' : ''}"></i>`).join('')}<span>${n} / 3</span></div>`;
+const STEPS = 4;
+const progress = n => `<div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="${STEPS}" aria-valuenow="${n}" aria-label="Setup step ${n} of ${STEPS}">${Array.from({length: STEPS}, (_, k) => `<i class="${k < n ? 'on' : ''}"></i>`).join('')}<span>${n} / ${STEPS}</span></div>`;
 
 function viewSetup() {
   const o = ['<div class="ob">', progress(OB.step)];
@@ -299,7 +304,7 @@ function viewSetup() {
     o.push('<div class="opts">' + PRIORITIES.map(([k, t, d]) => `<label class="opt"><input type="checkbox" data-ob-priority="${k}" ${OB.priorities.has(k) ? 'checked' : ''}>
       <div><div class="t">${esc(t)}</div><div class="s">${esc(d)}</div></div></label>`).join('') + '</div>');
     o.push(`<div class="ob-actions"><button class="btn" type="button" data-ob="back">Back</button><span class="status" id="ob-status"></span><button class="btn primary" type="button" data-ob="next">Continue</button></div>`);
-  } else {
+  } else if (OB.step === 3) {
     const r = OB.reminders;
     let zones = []; try { zones = Intl.supportedValuesOf('timeZone'); } catch {}
     if (!zones.includes(OB.tz)) zones.unshift(OB.tz);
@@ -314,7 +319,31 @@ function viewSetup() {
     </div>
     <h2 style="margin-top:26px">What it will include</h2><p class="hint">Chosen from your answers on the last step.</p>
     <div class="checks">${INCLUDE.map(([k, l]) => `<label class="check"><input type="checkbox" data-ob-inc="${k}" ${r.include[k] ? 'checked' : ''}>${esc(l)}</label>`).join('')}</div></div>`);
-    o.push(`<div class="ob-actions"><button class="btn" type="button" data-ob="back">Back</button><span class="status" id="ob-status"></span><button class="btn primary" type="button" data-ob="finish">${r.on ? 'Finish and turn on emails' : 'Finish'}</button></div>`);
+    o.push(`<div class="ob-actions"><button class="btn" type="button" data-ob="back">Back</button><span class="status" id="ob-status"></span><button class="btn primary" type="button" data-ob="next">Continue</button></div>`);
+  } else {
+    const wanted = OB.priorities.has('claude');
+    o.push(`<h1>${wanted ? 'Connect your Claude' : 'Want to ask Claude about your classes?'}</h1>
+      <p class="lede">Add Classroom Digest to your own Claude and it can read your Classroom when you ask. It runs on your Claude plan, with no API key. Add it once on claude.ai and it works in the Claude app on your phone too.</p>`);
+    o.push(`<h2 style="margin-top:4px">What you can ask</h2>
+      <div class="egs">
+        <div class="eg"><div><div class="t">\u201cWhat\u2019s due this week, and what should I start first?\u201d</div><div class="s">It reads your real deadlines and points across every class.</div></div></div>
+        <div class="eg"><div><div class="t">\u201cDid any professor mention a deadline that isn\u2019t on Classroom?\u201d</div><div class="s">It checks announcement text for dates that were never set as assignments.</div></div></div>
+        <div class="eg"><div><div class="t">\u201cWhat did my Macro professor announce in the last two weeks?\u201d</div><div class="s">It summarises posts for one class or all of them.</div></div></div>
+        <div class="eg"><div><div class="t">\u201cMake me a revision plan for my exams around everything else that\u2019s due.\u201d</div><div class="s">It plans with your actual workload instead of guessing.</div></div></div>
+      </div>`);
+    o.push(`<h2>How to connect</h2>
+      <ol class="steps" style="margin-top:4px">
+        <li>Copy this URL:</li>
+      </ol>
+      <div class="field"><code id="ob-mcp">${esc(MCP_URL)}</code><button class="btn" type="button" data-copy="ob-mcp">${I.copy}<span>Copy</span></button></div>
+      <ol class="steps" start="2">
+        <li>In Claude, open <b>Settings \u2192 Connectors</b>, choose <b>Add custom connector</b>, name it <b>Classroom</b> and paste the URL.</li>
+        <li>Click <b>Connect</b>, confirm on this site, and sign in with this same Google account.</li>
+      </ol>
+      <div class="actions"><a class="btn" href="https://claude.ai/settings/connectors" target="_blank" rel="noopener">Open Claude connector settings ${I.ext}</a></div>
+      <p class="hint" style="margin-top:14px">Read-only: Claude can see assignments, announcements and material titles, but not the files, and it can't post or submit anything. Claude Code instructions are on the Claude tab.</p>`);
+    o.push(`<div class="ob-actions"><button class="btn" type="button" data-ob="back">Back</button><span class="status" id="ob-status"></span>
+      <span style="display:flex;gap:8px"><button class="btn" type="button" data-ob="finish">Skip for now</button><button class="btn primary" type="button" data-ob="finish">${OB.reminders.on ? 'Done, turn on emails' : 'Done'}</button></span></div>`);
   }
   o.push('</div>');
   return o.join('');
@@ -327,9 +356,8 @@ async function finishSetup(btn) {
   try {
     const hiddenCourses = (DATA.courses || []).filter(c => !OB.shown.has(c.id)).map(c => c.id);
     await post('/api/prefs', {hiddenCourses, priorities: [...OB.priorities], reminders: OB.reminders, tz: OB.tz, onboarded: true});
-    const goClaude = OB.priorities.has('claude');
     OB = null; DATA = null; document.body.classList.remove('setup');
-    location.hash = goClaude ? '#claude' : '#todo';
+    location.hash = '#todo';
     await load();
     if (DATA && DATA.me.reminders.on) toast(`Set up. First email ${nextSend(DATA.me.reminders, DATA.me.tz)}.`);
   } catch (e) { btn.disabled = false; st.className = 'status err'; st.textContent = e.message; }
