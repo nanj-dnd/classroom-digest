@@ -1,5 +1,5 @@
 import { getSession, sameOrigin } from '../lib/session.js';
-import { loadOrBlank, save, DEFAULT_REMINDERS } from '../lib/store.js';
+import { loadOrBlank, save, DEFAULT_REMINDERS, PRIORITIES } from '../lib/store.js';
 import { validZone } from '../lib/load.js';
 import { json } from '../lib/http.js';
 
@@ -25,6 +25,8 @@ export default async function handler(req, res) {
     if (typeof b.unhide === 'string') doc.hiddenTasks = (doc.hiddenTasks || []).filter((t) => t.id !== b.unhide);
 
     if (typeof b.tz === 'string' && validZone(b.tz)) doc.tz = b.tz;
+    if (Array.isArray(b.priorities)) doc.priorities = [...new Set(b.priorities.filter((x) => PRIORITIES.includes(x)))];
+    if (typeof b.onboarded === 'boolean') doc.onboarded = b.onboarded;
 
     if (b.reminders && typeof b.reminders === 'object') {
       const r = b.reminders, cur = doc.reminders || structuredClone(DEFAULT_REMINDERS);
@@ -40,7 +42,7 @@ export default async function handler(req, res) {
     }
 
     await save(doc);
-    json(res, 200, { ok: true, me: { email: s.email, tz: doc.tz, reminders: doc.reminders }, hidden: doc.hiddenTasks });
+    json(res, 200, { ok: true, me: { email: s.email, tz: doc.tz, reminders: doc.reminders, priorities: doc.priorities || [], onboarded: !!doc.onboarded }, hidden: doc.hiddenTasks });
   } catch (e) {
     console.error('prefs', e.message);
     json(res, 502, { error: 'Could not save that. Try again.' });

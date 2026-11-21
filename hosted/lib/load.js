@@ -5,7 +5,8 @@ import { buildPayload, defaultHidden, ORDER } from './digest.js';
 // The dashboard, test emails and the daily reminder job all go through here.
 export async function loadDigest(accessToken, doc, tzOffset = 0) {
   const all = await listCourses(accessToken);
-  const hiddenCourses = new Set(doc.hiddenCourses ?? defaultHidden(all));
+  const old = new Set(defaultHidden(all));
+  const hiddenCourses = new Set(doc.hiddenCourses ?? old);
   const visible = all.filter((c) => !hiddenCourses.has(c.id));
   const courses = await Promise.all(visible.map((c) => fetchCourse(accessToken, c)));
   const p = buildPayload(courses, new Date(), tzOffset);
@@ -21,7 +22,7 @@ export async function loadDigest(accessToken, doc, tzOffset = 0) {
 
   const t = (c) => Date.parse(c.creationTime || '') || 0;
   p.courses = all.sort((a, b) => t(b) - t(a))
-    .map((c) => ({ id: c.id, name: c.name || '(untitled course)', section: c.section || '', hidden: hiddenCourses.has(c.id) }));
+    .map((c) => ({ id: c.id, name: c.name || '(untitled course)', section: c.section || '', hidden: hiddenCourses.has(c.id), old: old.has(c.id) }));
   return p;
 }
 

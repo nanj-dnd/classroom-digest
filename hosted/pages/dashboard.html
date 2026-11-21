@@ -179,6 +179,26 @@ select{border:1px solid var(--line);background:var(--bg);border-radius:8px;paddi
 .toast span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .toast button{background:none;border:0;color:inherit;font-weight:600;cursor:pointer;padding:4px 6px;border-radius:5px;text-decoration:underline;text-underline-offset:3px}
 
+/* setup */
+body.setup nav,body.setup .who{display:none}
+.skip{margin-left:auto;font-size:13px;color:var(--faint);background:none;border:0;cursor:pointer;padding:6px 4px}
+.skip:hover{color:var(--ink)}
+body:not(.setup) .skip{display:none}
+.ob{max-width:600px;margin:0 auto}
+.progress{display:flex;gap:6px;align-items:center;margin:0 0 28px}
+.progress i{flex:1;height:4px;border-radius:2px;background:var(--line);transition:background .25s}
+.progress i.on{background:var(--accent)}
+.progress span{font-size:12.5px;color:var(--faint);font-variant-numeric:tabular-nums;margin-left:6px}
+.opts{display:grid;gap:8px;margin:0}
+.opt{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--line);border-radius:10px;cursor:pointer;transition:border-color .15s,background .15s}
+.opt:hover{background:var(--hover)}
+.opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.opt input{accent-color:var(--accent);width:17px;height:17px;margin:2px 0 0;flex:none}
+.opt .t{font-weight:550}
+.opt .s{font-size:13px;color:var(--muted);margin-top:1px}
+.opt .tag{display:inline-block;font-size:11.5px;color:var(--faint);border:1px solid var(--line);border-radius:4px;padding:0 5px;margin-left:6px;font-weight:400;vertical-align:1px}
+.ob-actions{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:28px;padding-top:18px;border-top:1px solid var(--line)}
+.ob-actions .status{flex:1;text-align:right}
 footer{max-width:880px;margin:0 auto;padding:0 24px 40px;font-size:12.5px;color:var(--faint)}
 footer a{color:inherit}
 </style>
@@ -194,6 +214,7 @@ footer a{color:inherit}
     <a href="#settings" data-tab="settings">Settings</a>
   </nav>
   <a class="who" id="who" href="#settings"></a>
+  <button class="skip" type="button" id="skip-setup">Skip setup</button>
 </div></header>
 <main id="main" tabindex="-1"></main>
 <footer id="foot"></footer>
@@ -232,6 +253,88 @@ const INCLUDE = [
   ['later','Due later (within 2 weeks)'],['undated','Work with no due date'],['mentioned','Dates mentioned in announcements'],
   ['announcements','New announcements'],['grades','New grades'],
 ];
+const PRIORITIES = [
+  ['deadlines', 'Never miss a deadline', 'Overdue work and what is due in the next few days, first.'],
+  ['mentioned', 'Catch deadlines that aren\u2019t on Classroom', 'Dates professors only wrote in announcements.'],
+  ['announcements', 'Keep up with announcements', 'Everything your professors posted, in one place.'],
+  ['grades', 'Know when grades come back', 'New grades as soon as they are returned.'],
+  ['plan', 'Plan my week', 'Everything due in the next two weeks, including work with no date.'],
+  ['claude', 'Ask Claude about my classes', 'Connect your own Claude to your Classroom.'],
+];
+// What each priority switches on in the email.
+function includeFor(pr) {
+  const has = k => pr.has(k), any = pr.size > 0;
+  if (!any) return {overdue:true,today:true,soon:true,week:true,later:false,undated:false,mentioned:true,announcements:true,grades:true};
+  const work = has('deadlines') || has('plan');
+  return {overdue:work, today:work, soon:work, week:work, later:has('plan'), undated:has('plan'),
+    mentioned:has('mentioned') || has('deadlines'), announcements:has('announcements'), grades:has('grades')};
+}
+let OB = null; // setup state while the flow is open
+function startSetup() {
+  const me = DATA.me || {}, r = me.reminders || {};
+  const pr = new Set(me.priorities || []);
+  OB = {
+    step: 1,
+    shown: new Set((DATA.courses || []).filter(c => !c.hidden).map(c => c.id)),
+    priorities: pr,
+    touchedInclude: false,
+    reminders: {on: me.onboarded ? !!r.on : true, days: r.days && r.days.length ? [...r.days] : [0,1,2,3,4,5,6], hour: Number.isInteger(r.hour) ? r.hour : 21,
+      include: me.onboarded && r.include ? {...r.include} : includeFor(pr), skipEmpty: r.skipEmpty !== false},
+    tz: me.hasSettings ? me.tz : detectedTz,
+  };
+}
+const progress = n => `<div class="progress" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="${n}" aria-label="Setup step ${n} of 3">${[1,2,3].map(k => `<i class="${k <= n ? 'on' : ''}"></i>`).join('')}<span>${n} / 3</span></div>`;
+
+function viewSetup() {
+  const o = ['<div class="ob">', progress(OB.step)];
+  if (OB.step === 1) {
+    const cs = DATA.courses || [];
+    o.push(`<h1>Which classes are yours this semester?</h1><p class="lede">Classroom keeps old semesters marked active. Untick anything you've finished; you can change this later in Settings.</p>`);
+    o.push('<div class="opts">' + (cs.length ? cs.map(c => `<label class="opt"><input type="checkbox" data-ob-course="${esc(c.id)}" ${OB.shown.has(c.id) ? 'checked' : ''}>
+      <div><div class="t">${esc(short(c.name))}${c.old ? '<span class="tag">older, probably finished</span>' : ''}</div>${c.section ? `<div class="s">${esc(c.section)}</div>` : ''}</div></label>`).join('')
+      : '<p class="empty">No active classes found on this Google account. If your classes are on a different account, sign out and sign in with that one.</p>') + '</div>');
+    o.push(`<div class="ob-actions"><span></span><span class="status err" id="ob-status"></span><button class="btn primary" type="button" data-ob="next">Continue</button></div>`);
+  } else if (OB.step === 2) {
+    o.push(`<h1>What do you want this for?</h1><p class="lede">Pick as many as you like. This decides what goes in your email; you can fine-tune it after.</p>`);
+    o.push('<div class="opts">' + PRIORITIES.map(([k, t, d]) => `<label class="opt"><input type="checkbox" data-ob-priority="${k}" ${OB.priorities.has(k) ? 'checked' : ''}>
+      <div><div class="t">${esc(t)}</div><div class="s">${esc(d)}</div></div></label>`).join('') + '</div>');
+    o.push(`<div class="ob-actions"><button class="btn" type="button" data-ob="back">Back</button><span class="status" id="ob-status"></span><button class="btn primary" type="button" data-ob="next">Continue</button></div>`);
+  } else {
+    const r = OB.reminders;
+    let zones = []; try { zones = Intl.supportedValuesOf('timeZone'); } catch {}
+    if (!zones.includes(OB.tz)) zones.unshift(OB.tz);
+    o.push(`<h1>Do you want an email digest?</h1><p class="lede">One email on the days you pick, sent to ${esc((DATA.me && DATA.me.email) || 'your Google address')}. Every email has a link to turn them off.</p>`);
+    o.push(`<div class="switch-row" style="border:1px solid var(--line);border-radius:10px;padding:12px 14px"><div class="lbl"><div style="font-weight:550">Email me a digest</div><div>You can change or stop this any time in Settings.</div></div>
+      <label class="switch"><input type="checkbox" id="ob-on" ${r.on ? 'checked' : ''} aria-label="Email me a digest"><span></span></label></div>`);
+    o.push(`<div id="ob-email" class="${r.on ? '' : 'muted-block'}"><div class="grid">
+      <label>Days</label><div class="days" role="group" aria-label="Days">${DAYS.map(([l, v]) => `<button class="chip" type="button" data-ob-day="${v}" aria-pressed="${r.days.includes(v)}">${l}</button>`).join('')}</div>
+      <label for="ob-hour">Time</label><div><select id="ob-hour">${Array.from({length:24}, (_, h) => `<option value="${h}" ${h === r.hour ? 'selected' : ''}>${hourLabel(h)}</option>`).join('')}</select>
+        <span class="hint" style="margin:0 0 0 8px">${r.hour >= 18 ? 'Evening emails cover tomorrow.' : 'Arrives within the hour.'}</span></div>
+      <label for="ob-tz">Time zone</label><select id="ob-tz">${zones.map(z => `<option ${z === OB.tz ? 'selected' : ''}>${esc(z)}</option>`).join('')}</select>
+    </div>
+    <h2 style="margin-top:26px">What it will include</h2><p class="hint">Chosen from your answers on the last step.</p>
+    <div class="checks">${INCLUDE.map(([k, l]) => `<label class="check"><input type="checkbox" data-ob-inc="${k}" ${r.include[k] ? 'checked' : ''}>${esc(l)}</label>`).join('')}</div></div>`);
+    o.push(`<div class="ob-actions"><button class="btn" type="button" data-ob="back">Back</button><span class="status" id="ob-status"></span><button class="btn primary" type="button" data-ob="finish">${r.on ? 'Finish and turn on emails' : 'Finish'}</button></div>`);
+  }
+  o.push('</div>');
+  return o.join('');
+}
+
+async function finishSetup(btn) {
+  const st = document.getElementById('ob-status');
+  if (OB.reminders.on && !OB.reminders.days.length) { st.className = 'status err'; st.textContent = 'Pick at least one day.'; return; }
+  btn.disabled = true; st.className = 'status'; st.textContent = 'Saving…';
+  try {
+    const hiddenCourses = (DATA.courses || []).filter(c => !OB.shown.has(c.id)).map(c => c.id);
+    await post('/api/prefs', {hiddenCourses, priorities: [...OB.priorities], reminders: OB.reminders, tz: OB.tz, onboarded: true});
+    const goClaude = OB.priorities.has('claude');
+    OB = null; DATA = null; document.body.classList.remove('setup');
+    location.hash = goClaude ? '#claude' : '#todo';
+    await load();
+    if (DATA && DATA.me.reminders.on) toast(`Set up. First email ${nextSend(DATA.me.reminders, DATA.me.tz)}.`);
+  } catch (e) { btn.disabled = false; st.className = 'status err'; st.textContent = e.message; }
+}
+
 const detectedTz = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata'; } catch { return 'Asia/Kolkata'; } })();
 
 const d = s => s ? new Date(s) : null;
@@ -432,7 +535,7 @@ function viewSettings() {
   <div class="section">
     <h3>Account</h3>
     <p class="hint">Signed in as ${esc(me.email || 'your Google account')}. Your settings are stored encrypted; your Google sign-in is only kept on the server while email reminders are on.</p>
-    <div class="actions"><button class="btn" type="button" data-ui="signout">Sign out</button><button class="btn danger" type="button" id="delete">Delete my data</button></div>
+    <div class="actions"><button class="btn" type="button" data-ui="redo-setup">Redo setup</button><button class="btn" type="button" data-ui="signout">Sign out</button><button class="btn danger" type="button" id="delete">Delete my data</button></div>
   </div>`;
 }
 
@@ -445,7 +548,10 @@ function render() {
   const t = tab();
   document.querySelectorAll('nav a').forEach(a => a.setAttribute('aria-current', a.dataset.tab === t ? 'page' : 'false'));
   const main = document.getElementById('main');
-  if (t === 'claude') { main.innerHTML = viewClaude(); }
+  const inSetup = !!(DATA && !ERR && (OB || !(DATA.me && DATA.me.onboarded)));
+  document.body.classList.toggle('setup', inSetup);
+  if (inSetup) { if (!OB) startSetup(); main.innerHTML = viewSetup(); }
+  else if (t === 'claude') { main.innerHTML = viewClaude(); }
   else if (ERR) { main.innerHTML = `<h1>Couldn't load</h1><p class="lede">${esc(ERR)}</p><div class="actions"><button class="btn primary" type="button" onclick="location.reload()">Try again</button><button class="btn" type="button" data-ui="signout">Sign out</button></div>`; }
   else if (!DATA) { main.innerHTML = skeleton(); }
   else main.innerHTML = ({todo:viewTodo, updates:viewUpdates, grades:viewGrades, settings:viewSettings}[t] || viewTodo)();
@@ -535,6 +641,18 @@ function nextSend(r, tz) {
 
 document.addEventListener('change', async e => {
   const t = e.target;
+  if (OB) {
+    if (t.dataset.obCourse) { t.checked ? OB.shown.add(t.dataset.obCourse) : OB.shown.delete(t.dataset.obCourse); return; }
+    if (t.dataset.obPriority) {
+      t.checked ? OB.priorities.add(t.dataset.obPriority) : OB.priorities.delete(t.dataset.obPriority);
+      if (!OB.touchedInclude) OB.reminders.include = includeFor(OB.priorities);
+      return;
+    }
+    if (t.id === 'ob-on') { OB.reminders.on = t.checked; return render(); }
+    if (t.id === 'ob-hour') { OB.reminders.hour = +t.value; return render(); }
+    if (t.id === 'ob-tz') { OB.tz = t.value; return; }
+    if (t.dataset.obInc) { OB.reminders.include[t.dataset.obInc] = t.checked; OB.touchedInclude = true; return; }
+  }
   if (t.id === 'r-on' || t.id === 'r-hour' || t.id === 'r-tz' || t.id === 'r-skip' || t.dataset.inc) return saveReminders();
   if (t.dataset.courseToggle) {
     const hiddenCourses = [...document.querySelectorAll('[data-course-toggle]')].filter(i => !i.checked).map(i => i.dataset.courseToggle);
@@ -547,6 +665,23 @@ document.addEventListener('change', async e => {
 let deleteArmed = false;
 document.addEventListener('click', async e => {
   const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.ob === 'next') {
+    if (OB.step === 1 && (DATA.courses || []).length && !OB.shown.size) { const st = document.getElementById('ob-status'); st.textContent = 'Pick at least one class.'; return; }
+    OB.step++; render(); window.scrollTo(0, 0); return;
+  }
+  if (b.dataset.ob === 'back') { OB.step--; render(); window.scrollTo(0, 0); return; }
+  if (b.dataset.ob === 'finish') return finishSetup(b);
+  if (b.dataset.obDay !== undefined) {
+    const v = +b.dataset.obDay, days = OB.reminders.days;
+    OB.reminders.days = days.includes(v) ? days.filter(x => x !== v) : [...days, v];
+    b.setAttribute('aria-pressed', OB.reminders.days.includes(v)); return;
+  }
+  if (b.id === 'skip-setup') {
+    b.disabled = true;
+    try { await post('/api/prefs', {onboarded: true}); DATA.me.onboarded = true; } catch (err) { toast(err.message); }
+    OB = null; b.disabled = false; return render();
+  }
+  if (b.dataset.ui === 'redo-setup') { startSetup(); window.scrollTo(0, 0); return render(); }
   if (b.dataset.hide) return hide(b.dataset.hide);
   if (b.dataset.unhide) { b.disabled = true; return unhide(b.dataset.unhide); }
   if (b.dataset.course) { setClass(b.dataset.course); return render(); }

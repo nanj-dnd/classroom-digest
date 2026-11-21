@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   try {
     const tz = Math.max(-840, Math.min(840, Number(req.query.tz) || 0));
     const p = await loadDigest(u.at, doc, tz);
-    p.me = { email: u.s.email, tz: doc.tz, reminders: doc.reminders, hasSettings: !!doc.updatedAt };
+    p.me = { email: u.s.email, tz: doc.tz, reminders: doc.reminders, hasSettings: !!doc.updatedAt, priorities: doc.priorities || [], onboarded: !!doc.onboarded };
     json(res, 200, p);
   } catch (e) { classroomError(res, e); }
 }

@@ -18,8 +18,10 @@ export const DEFAULT_REMINDERS = {
   skipEmpty: true,
 };
 
+export const PRIORITIES = ['deadlines', 'mentioned', 'announcements', 'grades', 'plan', 'claude'];
+
 export function blank(sub, email) {
-  return { sub, email, tz: 'Asia/Kolkata', hiddenCourses: null, hiddenTasks: [], reminders: structuredClone(DEFAULT_REMINDERS), rt: null, lastSent: null };
+  return { sub, email, tz: 'Asia/Kolkata', hiddenCourses: null, hiddenTasks: [], reminders: structuredClone(DEFAULT_REMINDERS), priorities: [], onboarded: false, rt: null, lastSent: null };
 }
 
 async function readBody(res) {
