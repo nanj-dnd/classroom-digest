@@ -73,10 +73,10 @@ export function sameOrigin(req) {
   if (o && o !== 'null') {
     try { return new URL(o).host === req.headers.host; } catch { return false; }
   }
-  // Our Referrer-Policy is no-referrer, and under it browsers send
-  // "Origin: null" on a plain <form> POST (the connect page's "Continue to
-  // Google"). Sec-Fetch-Site is unaffected by that policy and no page can set
-  // it, so it settles the question when Origin can't.
+  // Under a no-referrer policy browsers send "Origin: null" on a plain <form>
+  // POST (the connect page's "Continue to Google"). The site now uses
+  // same-origin, which keeps Origin intact; Sec-Fetch-Site, which no page can
+  // set, still covers any browser that sends null anyway.
   return req.headers['sec-fetch-site'] === 'same-origin';
 }
 
