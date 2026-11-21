@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy · Classroom Digest</title>
+<meta name="description" content="See everything due across your Google Classroom courses on one page.">
+<style>
+:root{--bg:#fff;--ink:#37352f;--muted:#787774;--faint:#9b9a97;--line:#e9e9e7;--hover:#f1f1ef;--tint:#f7f6f3;--amberbg:#fbf3db}
+:root:not([data-theme="light"]){@media (prefers-color-scheme:dark){--bg:#191919;--ink:#d4d4d4;--muted:#9b9b9b;--faint:#6f6f6f;--line:#2f2f2f;--hover:#252525;--tint:#202020;--amberbg:#2c2413}}
+:root[data-theme="dark"]{--bg:#191919;--ink:#d4d4d4;--muted:#9b9b9b;--faint:#6f6f6f;--line:#2f2f2f;--hover:#252525;--tint:#202020;--amberbg:#2c2413}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);line-height:1.55;font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,"Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
+.page{max-width:640px;margin:0 auto;padding:72px 32px 96px}
+@media(max-width:640px){.page{padding:40px 16px 72px}}
+h1{font-size:40px;line-height:1.15;font-weight:700;letter-spacing:-.02em;margin:0 0 12px}
+@media(max-width:640px){h1{font-size:30px}}
+h2{font-size:16px;font-weight:600;margin:34px 0 6px}
+p{margin:0 0 12px;color:var(--muted);font-size:15px}
+a{color:inherit}
+.btn{display:inline-block;background:var(--ink);color:var(--bg);text-decoration:none;font-weight:500;font-size:15px;padding:10px 18px;border-radius:6px;margin:12px 0 4px}
+.btn:hover{opacity:.88}
+ul{padding-left:18px;margin:8px 0 0}
+li{font-size:14.5px;color:var(--muted);margin-bottom:6px}
+.note{background:var(--amberbg);border-radius:4px;padding:12px 14px;font-size:13.5px;margin:26px 0 0;color:var(--ink)}
+.note p{font-size:13.5px;color:var(--ink);margin:0}
+footer{border-top:1px solid var(--line);margin-top:40px;padding-top:12px;font-size:12px;color:var(--faint)}
+footer a{color:inherit}
+</style>
+</head>
+<body><div class="page">
+<h1>Privacy</h1>
+<p>Last updated 21 November 2026.</p>
+<h2>What Classroom Digest reads</h2>
+<p>With your permission, it reads your Google Classroom courses, the coursework and your own submission status, announcements and course materials, all read-only. It never posts, edits or submits anything, and it does not request access to Drive, Gmail or your calendar.</p>
+<h2>What it keeps</h2>
+<p>Your settings: which tasks and courses you've hidden, and your email reminder choices (days, time, time zone, sections), plus your Google account id and verified email address. They are encrypted and kept in private storage on Vercel.</p>
+<p>Your Google sign-in token is kept on the server only while email reminders are switched on, because sending them needs it. When reminders are off, it lives only in an encrypted cookie in your browser. Your coursework itself is read from Classroom when you open the page or when a reminder is sent, and is never saved.</p>
+<p>Reminder emails are sent through Resend. There is no analytics and no advertising. Your data is not sold, shared or used to train AI models. The hosting provider (Vercel) keeps standard request logs, which do not include your coursework.</p>
+<h2>The Claude connector</h2>
+<p>If you add Classroom Digest as a connector in a Claude app, the same read-only access is used to answer your questions there. The tokens Claude holds are encrypted packets that only this server can open; nothing about you is stored here. Your questions and Claude's answers are handled by Anthropic under its own terms. Remove the connector in Claude to stop it.</p>
+<h2>Removing access</h2>
+<p><b>Delete my data</b> in Settings removes everything stored about you and revokes access at Google. <b>Sign out</b> clears the cookies on that browser. Every reminder email has a link that turns reminders off. You can also remove the app at <a href="https://myaccount.google.com/permissions">myaccount.google.com/permissions</a>.</p>
+<h2>Google API Services User Data Policy</h2>
+<p>Classroom Digest's use of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+<h2>Contact</h2>
+<p>Questions or deletion requests: open an issue at <a href="https://github.com/nanj-dnd/classroom-digest/issues">github.com/nanj-dnd/classroom-digest</a>.</p>
+<footer><a href="/privacy">Privacy</a> · <a href="https://github.com/nanj-dnd/classroom-digest">Source on GitHub</a> · Made by <a href="https://anshul-anand.com">Anshul Anand</a></footer>
+</div></body>
+</html>

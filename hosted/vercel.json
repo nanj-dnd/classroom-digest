@@ -1,0 +1,213 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "api/main.js": {
+      "includeFiles": "{pages,routes,lib}/**",
+      "maxDuration": 300
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/api/main?route=home"
+    },
+    {
+      "source": "/privacy",
+      "destination": "/api/main?route=privacy"
+    },
+    {
+      "source": "/signin",
+      "destination": "/api/main?route=signin"
+    },
+    {
+      "source": "/callback",
+      "destination": "/api/main?route=callback"
+    },
+    {
+      "source": "/api/signout",
+      "destination": "/api/main?route=signout"
+    },
+    {
+      "source": "/api/data",
+      "destination": "/api/main?route=data"
+    },
+    {
+      "source": "/api/prefs",
+      "destination": "/api/main?route=prefs"
+    },
+    {
+      "source": "/api/test-email",
+      "destination": "/api/main?route=test-email"
+    },
+    {
+      "source": "/api/delete-account",
+      "destination": "/api/main?route=delete-account"
+    },
+    {
+      "source": "/api/unsubscribe",
+      "destination": "/api/main?route=unsubscribe"
+    },
+    {
+      "source": "/api/cron",
+      "destination": "/api/main?route=cron"
+    },
+    {
+      "source": "/mcp",
+      "destination": "/api/main?route=mcp"
+    },
+    {
+      "source": "/oauth/authorize",
+      "destination": "/api/main?route=oauth-authorize"
+    },
+    {
+      "source": "/oauth/token",
+      "destination": "/api/main?route=oauth-token"
+    },
+    {
+      "source": "/oauth/register",
+      "destination": "/api/main?route=oauth-register"
+    },
+    {
+      "source": "/.well-known/oauth-protected-resource",
+      "destination": "/api/main?route=oauth-metadata&kind=resource"
+    },
+    {
+      "source": "/.well-known/oauth-protected-resource/mcp",
+      "destination": "/api/main?route=oauth-metadata&kind=resource"
+    },
+    {
+      "source": "/.well-known/oauth-authorization-server",
+      "destination": "/api/main?route=oauth-metadata&kind=as"
+    },
+    {
+      "source": "/.well-known/oauth-authorization-server/mcp",
+      "destination": "/api/main?route=oauth-metadata&kind=as"
+    },
+    {
+      "source": "/.well-known/openid-configuration",
+      "destination": "/api/main?route=oauth-metadata&kind=as"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=31536000"
+        }
+      ]
+    }
+  ],
+  "outputDirectory": "public",
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 11 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 12 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 13 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 17 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 18 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 19 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 20 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 21 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 22 * * *"
+    },
+    {
+      "path": "/api/cron",
+      "schedule": "0 23 * * *"
+    }
+  ]
+}

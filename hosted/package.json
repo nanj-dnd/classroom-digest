@@ -1,0 +1,12 @@
+{
+  "name": "classroom-digest-hosted",
+  "private": true,
+  "type": "module",
+  "description": "Hosted Classroom Digest: sign in with Google, see your coursework. Stores nothing server-side.",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.9.0"
+  }
+}
