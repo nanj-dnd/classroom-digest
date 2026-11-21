@@ -1,6 +1,8 @@
 // Google sign-in and the Classroom REST API, with plain fetch so the function
 // ships with no dependencies.
 
+// What we need to work. Sign-in also asks for openid + email, so reminder
+// emails go to the address Google has verified.
 export const SCOPES = [
   'https://www.googleapis.com/auth/classroom.courses.readonly',
   'https://www.googleapis.com/auth/classroom.coursework.me.readonly',
@@ -34,7 +36,7 @@ export function authUrl(redirectUri, state) {
     client_id: client().id,
     redirect_uri: redirectUri,
     response_type: 'code',
-    scope: SCOPES.join(' '),
+    scope: ['openid', 'email', ...SCOPES].join(' '),
     access_type: 'offline',
     prompt: 'consent',
     state,
@@ -56,6 +58,13 @@ async function token(params) {
     throw e;
   }
   return j;
+}
+
+// The id_token comes straight from Google's token endpoint over TLS, so its
+// claims can be read without verifying the signature (Google's own guidance).
+export function idClaims(t) {
+  try { return JSON.parse(Buffer.from(String(t.id_token).split('.')[1], 'base64url').toString('utf8')); }
+  catch { return {}; }
 }
 
 export const exchangeCode = (code, redirectUri) =>

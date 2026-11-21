@@ -38,7 +38,7 @@ function triage(courses, now) {
       }
       if (due && due.getTime() > horizon) continue;
       items.push({
-        title: w.title, course: c.name, link: w.alternateLink, points: w.maxPoints ?? null,
+        id: w.id, courseId: c.id, title: w.title, course: c.name, link: w.alternateLink, points: w.maxPoints ?? null,
         due, started: s?.state === 'CREATED', late: !!s?.late, bucket: bucketOf(due, now),
       });
     }
@@ -104,7 +104,7 @@ function detectDeadlines(courses, now, tz) {
         if (found.some((f) => f.key === key)) continue;
         const s = text.slice(Math.max(0, h.at - 110), h.at + 60).trim();
         found.push({
-          key, course: c.name, date: h.date.toISOString(), link: a.alternateLink,
+          key, id: `a:${key}`, courseId: c.id, course: c.name, date: h.date.toISOString(), link: a.alternateLink,
           quote: (h.at > 110 ? '…' : '') + s + (h.at + 60 < text.length ? '…' : ''),
         });
       }

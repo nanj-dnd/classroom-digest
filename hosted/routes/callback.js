@@ -1,5 +1,5 @@
 import { getState, clearState, sessionCookie, setCookies, safeEqualState, origin } from '../lib/session.js';
-import { exchangeCode, missingScopes } from '../lib/google.js';
+import { exchangeCode, missingScopes, idClaims } from '../lib/google.js';
 import { open, issueCode } from '../lib/oauth.js';
 import { html, redirect, message } from '../lib/http.js';
 
@@ -54,6 +54,8 @@ export default async function handler(req, res) {
     return redirect(res, u.toString());
   }
 
-  setCookies(res, [sessionCookie({ rt: t.refresh_token, at: t.access_token, exp: Date.now() + (t.expires_in - 60) * 1000 })]);
+  const id = idClaims(t);
+  if (!id.sub) return html(res, message('Sign-in incomplete', 'Google did not say which account signed in. Try again.'), 400);
+  setCookies(res, [sessionCookie({ sub: id.sub, email: id.email_verified === false ? '' : (id.email || ''), rt: t.refresh_token, at: t.access_token, exp: Date.now() + (t.expires_in - 60) * 1000 })]);
   redirect(res, '/');
 }

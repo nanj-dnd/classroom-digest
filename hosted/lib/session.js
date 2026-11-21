@@ -48,7 +48,8 @@ export function setCookies(res, list) {
 
 export const getSession = (req) => {
   const s = unseal(cookies(req)[SESSION] || '');
-  return s && s.rt ? s : null;
+  // Sessions from before accounts had ids are treated as signed out.
+  return s && s.rt && s.sub ? s : null;
 };
 export const sessionCookie = (s) => cookie(SESSION, seal(s), MONTH);
 export const clearSession = () => [cookie(SESSION, '', 0), cookie(PREFS, '', 0)];

@@ -2,288 +2,565 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <title>Classroom Digest</title>
 <style>
 :root{
-  --bg:#ffffff; --ink:#37352f; --muted:#787774; --faint:#9b9a97;
-  --line:#e9e9e7; --hover:#f1f1ef; --tint:#f7f6f3;
-  --red:#c4554d; --redbg:#fdebec; --amber:#cb912f; --amberbg:#fbf3db;
-  --blue:#337ea9; --bluebg:#e7f3f8; --green:#448361;
+  --bg:#ffffff; --panel:#f7f7f5; --ink:#1f1f1d; --muted:#6b6a66; --faint:#9a9893;
+  --line:#e8e7e3; --hover:#f2f1ee; --accent:#2b6fd6; --accent-ink:#ffffff; --accent-soft:#e8f0fc;
+  --red:#c2410c; --red-dot:#dc4a26; --amber:#a16207; --amber-dot:#e0a020; --blue-dot:#3b82d6; --gray-dot:#b9b7b1;
+  --amber-soft:#fbf4e2; --ok:#2f7d4f; --shadow:0 6px 24px -8px rgba(20,20,15,.22), 0 2px 6px -2px rgba(20,20,15,.08);
+  color-scheme:light;
 }
-:root:not([data-theme="light"]){ @media (prefers-color-scheme:dark){
-  --bg:#191919; --ink:#d4d4d4; --muted:#9b9b9b; --faint:#6f6f6f;
-  --line:#2f2f2f; --hover:#252525; --tint:#202020;
-  --red:#ff7369; --redbg:#2d2020; --amber:#ffdc49; --amberbg:#2c2413;
-  --blue:#529cca; --bluebg:#1a2733; --green:#4dab9a;
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#191918; --panel:#202020; --ink:#e7e6e3; --muted:#a3a19c; --faint:#75736e;
+  --line:#2e2e2c; --hover:#262625; --accent:#5b9bf0; --accent-ink:#0d1420; --accent-soft:#1c2a3d;
+  --red:#f08a6b; --red-dot:#f0714e; --amber:#e6b450; --amber-dot:#e6b450; --blue-dot:#6aa8f0; --gray-dot:#5d5b57;
+  --amber-soft:#2a2414; --ok:#62c08a; --shadow:0 8px 28px -8px rgba(0,0,0,.6), 0 2px 6px -2px rgba(0,0,0,.4);
+  color-scheme:dark;
 }}
 :root[data-theme="dark"]{
-  --bg:#191919; --ink:#d4d4d4; --muted:#9b9b9b; --faint:#6f6f6f;
-  --line:#2f2f2f; --hover:#252525; --tint:#202020;
-  --red:#ff7369; --redbg:#2d2020; --amber:#ffdc49; --amberbg:#2c2413;
-  --blue:#529cca; --bluebg:#1a2733; --green:#4dab9a;
+  --bg:#191918; --panel:#202020; --ink:#e7e6e3; --muted:#a3a19c; --faint:#75736e;
+  --line:#2e2e2c; --hover:#262625; --accent:#5b9bf0; --accent-ink:#0d1420; --accent-soft:#1c2a3d;
+  --red:#f08a6b; --red-dot:#f0714e; --amber:#e6b450; --amber-dot:#e6b450; --blue-dot:#6aa8f0; --gray-dot:#5d5b57;
+  --amber-soft:#2a2414; --ok:#62c08a; --shadow:0 8px 28px -8px rgba(0,0,0,.6), 0 2px 6px -2px rgba(0,0,0,.4);
+  color-scheme:dark;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);line-height:1.5;
-  font-family:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,"Helvetica Neue",sans-serif;
-  -webkit-font-smoothing:antialiased}
-.page{max-width:720px;margin:0 auto;padding:56px 56px 96px}
-@media(max-width:640px){.page{padding:32px 20px 72px}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",sans-serif;-webkit-font-smoothing:antialiased}
+::selection{background:var(--accent-soft);color:var(--ink)}
+a{color:inherit;text-underline-offset:3px}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
+svg{flex:none}
 
-.eyebrow{font-size:12px;color:var(--faint);margin-bottom:10px}
-h1{font-size:40px;line-height:1.15;font-weight:700;letter-spacing:-.02em;margin:0 0 4px}
-@media(max-width:640px){h1{font-size:30px}}
-.sub{color:var(--muted);font-size:14px;margin:0 0 8px}
+/* header */
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:saturate(1.4) blur(10px);-webkit-backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:880px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:20px;height:56px}
+.brand{font-weight:650;font-size:15px;letter-spacing:-.01em;white-space:nowrap;text-decoration:none}
+nav{display:flex;gap:2px;flex:1;min-width:0}
+nav a{display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:6px;color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;white-space:nowrap;transition:background .15s,color .15s}
+nav a:hover{background:var(--hover);color:var(--ink)}
+nav a[aria-current="page"]{color:var(--ink);background:var(--hover)}
+.count{font-size:11.5px;font-weight:600;line-height:18px;min-width:18px;padding:0 5px;border-radius:9px;background:var(--red-dot);color:#fff;text-align:center;font-variant-numeric:tabular-nums}
+.who{font-size:13px;color:var(--faint);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:none}
+.who:hover{color:var(--ink)}
+@media(max-width:720px){
+  .top-in{flex-wrap:wrap;height:auto;padding:10px 16px 0;gap:4px 12px}
+  .who{margin-left:auto}
+  nav{order:3;flex-basis:100%;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:4px 12px 8px}
+  nav::-webkit-scrollbar{display:none}
+}
 
-h2{font-size:16px;font-weight:600;margin:38px 0 6px;letter-spacing:-.01em}
-.hint{font-size:12px;color:var(--faint);margin:0 0 8px}
+/* page */
+main{max-width:880px;margin:0 auto;padding:40px 24px 120px}
+@media(max-width:720px){main{padding:24px 16px 120px}}
+h1{font-size:28px;line-height:1.2;font-weight:700;letter-spacing:-.02em;margin:0 0 6px}
+.lede{color:var(--muted);margin:0 0 24px;max-width:62ch}
+h2{font-size:13px;font-weight:600;color:var(--muted);margin:32px 0 6px;display:flex;align-items:center;gap:8px}
+h2 .n{font-weight:500;color:var(--faint);font-variant-numeric:tabular-nums}
+h3{font-size:16px;font-weight:600;margin:0 0 4px;letter-spacing:-.01em}
+.section{padding:28px 0;border-top:1px solid var(--line)}
+.section:first-of-type{border-top:0;padding-top:4px}
+.hint{font-size:13.5px;color:var(--muted);margin:0 0 14px;max-width:62ch}
 
-/* Notion-style callout */
-.callout{display:flex;gap:10px;padding:14px 16px;border-radius:4px;background:var(--tint);margin:6px 0 10px;font-size:14px}
-.callout.red{background:var(--redbg)} .callout.amber{background:var(--amberbg)} .callout.blue{background:var(--bluebg)}
-.callout .ico{flex:none;font-size:16px;line-height:1.4}
-.callout .body{min-width:0}
-.callout b{font-weight:600}
-.quote{color:var(--muted);font-size:13px;margin-top:5px;border-left:2px solid var(--line);padding-left:9px}
+/* filters */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer;color:var(--muted);transition:background .15s,border-color .15s,color .15s}
+.chip:hover{background:var(--hover);color:var(--ink)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
-/* rows */
-.line{display:flex;gap:12px;align-items:baseline;padding:7px 4px;border-radius:3px}
-.line:hover{background:var(--hover)}
-.line + .line{border-top:1px solid var(--line)}
-.t{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums;flex:none;min-width:98px}
-.name{font-weight:500;font-size:14px}
-.tag{font-size:11px;color:var(--faint);border:1px solid var(--line);border-radius:3px;padding:0 5px}
+/* task rows */
+.list{margin:0;padding:0;list-style:none}
+.row{display:flex;gap:12px;align-items:flex-start;padding:10px 8px;margin:0 -8px;border-radius:8px;transition:background .15s,opacity .2s,transform .2s}
+.row:hover{background:var(--hover)}
+.row + .row{box-shadow:0 -1px 0 var(--line)}
+.row:hover + .row,.row:hover{box-shadow:none}
+.dot{width:8px;height:8px;border-radius:50%;margin-top:8px;background:var(--gray-dot);flex:none}
+.dot.overdue,.dot.today{background:var(--red-dot)} .dot.soon{background:var(--amber-dot)} .dot.week{background:var(--blue-dot)}
+.dot.note{background:transparent;box-shadow:inset 0 0 0 1.5px var(--amber-dot)}
+.body{flex:1;min-width:0}
+.title{font-weight:550;text-decoration:none;word-break:break-word}
+.title:hover{text-decoration:underline}
+.meta{font-size:13px;color:var(--muted);margin-top:1px}
+.meta .late{color:var(--red);font-weight:550}
+.quote{font-size:13px;color:var(--muted);margin-top:4px;max-width:70ch}
+.icon-btn{display:inline-flex;align-items:center;gap:6px;border:0;background:none;color:var(--faint);padding:6px 8px;border-radius:6px;cursor:pointer;font-size:13px;opacity:0;transition:opacity .15s,background .15s,color .15s}
+.row:hover .icon-btn,.icon-btn:focus-visible{opacity:1}
+.icon-btn:hover{background:var(--line);color:var(--ink)}
+@media(hover:none){.icon-btn{opacity:1}}
+.empty{color:var(--muted);padding:28px 0;font-size:14.5px}
 
-.task{display:flex;gap:10px;padding:8px 4px;border-radius:3px;align-items:flex-start}
-.task:hover{background:var(--hover)}
-.task + .task{border-top:1px solid var(--line)}
-.dot{flex:none;width:7px;height:7px;border-radius:50%;margin-top:7px;background:var(--faint)}
-.dot.overdue,.dot.today{background:var(--red)} .dot.soon{background:var(--amber)} .dot.week{background:var(--blue)}
-.task a{color:var(--ink);text-decoration:none;font-weight:500;font-size:14.5px}
-.task a:hover{text-decoration:underline}
-.meta{font-size:12.5px;color:var(--muted);margin-top:1px}
+/* disclosure */
+details.more{margin-top:28px;border-top:1px solid var(--line)}
+details.more>summary{cursor:pointer;list-style:none;padding:14px 0 6px;font-size:13.5px;color:var(--muted);display:flex;align-items:center;gap:6px}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary svg{transition:transform .15s}
+details.more[open]>summary svg{transform:rotate(90deg)}
+details.more>summary:hover{color:var(--ink)}
 
-/* toggles */
-details{border-top:1px solid var(--line)}
-details:last-of-type{border-bottom:1px solid var(--line)}
-summary{cursor:pointer;list-style:none;padding:10px 4px;font-size:14px;font-weight:500;
-  display:flex;align-items:center;gap:8px;border-radius:3px}
-summary::-webkit-details-marker{display:none}
-summary:hover{background:var(--hover)}
-summary::before{content:"›";display:inline-block;transition:transform .15s;color:var(--faint);font-size:16px}
-details[open]>summary::before{transform:rotate(90deg)}
-.inner{padding:2px 4px 14px 24px}
-.kv{display:flex;justify-content:space-between;gap:14px;font-size:13.5px;padding:3px 0;color:var(--muted)}
-.kv b{color:var(--ink);font-weight:600;white-space:nowrap}
-.inner li{font-size:13.5px;color:var(--muted);margin-bottom:5px}
-.inner ul{margin:8px 0 0;padding-left:18px}
-.read{font-size:13.5px;margin-top:7px}
-.read b{font-weight:600}
+/* updates */
+.post{padding:14px 0;border-top:1px solid var(--line)}
+.post:first-child{border-top:0}
+.post .meta{margin:0 0 4px}
+.post p{margin:0;white-space:pre-wrap;word-break:break-word;max-width:72ch;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.post.open p{display:block}
+.links{display:flex;gap:14px;margin-top:6px;font-size:13px}
+.links a,.links button{color:var(--accent);text-decoration:none;background:none;border:0;padding:0;cursor:pointer;font-size:13px}
+.links a:hover,.links button:hover{text-decoration:underline}
 
-hr{border:0;border-top:1px solid var(--line);margin:34px 0 0}
-footer{color:var(--faint);font-size:12px;margin-top:14px}
-.empty{color:var(--faint);font-size:14px;padding:6px 4px}
-.bar{display:flex;justify-content:flex-end;gap:4px;margin:-28px -8px 18px}
-@media(max-width:640px){.bar{margin:-12px -8px 14px}}
-.bar button{font:inherit;font-size:13px;color:var(--muted);background:none;border:0;border-radius:4px;padding:4px 8px;cursor:pointer}
-.bar button:hover{background:var(--hover);color:var(--ink)}
-.picker{border:1px solid var(--line);border-radius:6px;padding:12px 14px;margin:0 0 18px;font-size:14px}
-.picker label{display:flex;gap:9px;align-items:baseline;padding:4px 0;cursor:pointer}
-.picker .sec{color:var(--faint);font-size:12.5px}
-.picker .row{display:flex;gap:8px;margin-top:10px}
-.btn{font:inherit;font-size:13px;border-radius:4px;padding:5px 12px;cursor:pointer;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
-.btn.primary{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.loading{color:var(--muted);font-size:14px;padding:40px 0}
+/* grades */
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-weight:500;font-size:12.5px;color:var(--faint);padding:0 8px 8px 0;border-bottom:1px solid var(--line)}
+td{padding:10px 8px 10px 0;border-bottom:1px solid var(--line);vertical-align:top}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;padding-right:0}
+td .meta{margin:0}
+
+/* claude */
+.field{display:flex;gap:8px;align-items:stretch;margin:6px 0 0;max-width:560px}
+.field code{flex:1;min-width:0;font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow-x:auto;white-space:nowrap}
+.steps{margin:10px 0 0;padding-left:20px;max-width:62ch}
+.steps li{margin:0 0 6px;color:var(--muted)}
+.steps li b{color:var(--ink);font-weight:550}
+.ask{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px;max-width:560px}
+.ask li{background:var(--panel);border-radius:8px;padding:9px 12px;font-size:14px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:8px 14px;font-size:14px;font-weight:500;cursor:pointer;text-decoration:none;white-space:nowrap;transition:background .15s,border-color .15s}
+.btn:hover{background:var(--hover)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.primary:hover{background:color-mix(in srgb,var(--accent) 88%,#000)}
+.btn.danger{color:var(--red)}
+.btn.danger.armed{background:var(--red-dot);color:#fff;border-color:var(--red-dot)}
+.btn:disabled{opacity:.55;cursor:default}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:14px}
+
+/* settings controls */
+.switch-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:10px 0}
+.switch-row + .switch-row{border-top:1px solid var(--line)}
+.switch-row .lbl{min-width:0}
+.switch-row .lbl div:last-child{font-size:13px;color:var(--muted)}
+.switch{position:relative;width:40px;height:24px;flex:none}
+.switch input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer;z-index:1}
+.switch span{position:absolute;inset:0;border-radius:12px;background:var(--line);transition:background .18s}
+.switch span::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .18s cubic-bezier(.2,.8,.2,1)}
+.switch input:checked + span{background:var(--accent)}
+.switch input:checked + span::after{transform:translateX(16px)}
+.switch input:focus-visible + span{outline:2px solid var(--accent);outline-offset:2px}
+.grid{display:grid;grid-template-columns:140px 1fr;gap:14px 20px;align-items:center;margin-top:16px;max-width:620px}
+.grid > label{font-size:13.5px;color:var(--muted)}
+@media(max-width:560px){.grid{grid-template-columns:1fr;gap:6px}.grid > label{margin-top:10px}}
+.days{display:flex;gap:6px;flex-wrap:wrap}
+.days .chip{min-width:44px;text-align:center}
+select{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:7px 10px;font-size:14px;max-width:100%}
+.checks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 18px}
+@media(max-width:560px){.checks{grid-template-columns:1fr}}
+.check{display:flex;gap:9px;align-items:flex-start;font-size:14px;padding:4px 0;cursor:pointer}
+.check input{accent-color:var(--accent);margin:3px 0 0;width:16px;height:16px;flex:none}
+.muted-block{opacity:.5;pointer-events:none;transition:opacity .2s}
+.status{font-size:13px;color:var(--faint);min-height:20px}
+.status.ok{color:var(--ok)} .status.err{color:var(--red)}
+.course-row{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:9px 0;border-top:1px solid var(--line)}
+.course-row:first-child{border-top:0}
+.course-row .sec{font-size:12.5px;color:var(--faint)}
+
+/* skeleton */
+.sk{height:14px;border-radius:5px;background:linear-gradient(90deg,var(--hover),var(--line),var(--hover));background-size:200% 100%;animation:sk 1.4s ease-in-out infinite}
+@keyframes sk{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,16px);opacity:0;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:10px;padding:10px 12px 10px 16px;display:flex;gap:14px;align-items:center;font-size:14px;box-shadow:var(--shadow);transition:opacity .2s,transform .25s cubic-bezier(.2,.8,.2,1);max-width:calc(100vw - 32px);z-index:10}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.toast button{background:none;border:0;color:inherit;font-weight:600;cursor:pointer;padding:4px 6px;border-radius:5px;text-decoration:underline;text-underline-offset:3px}
+
+footer{max-width:880px;margin:0 auto;padding:0 24px 40px;font-size:12.5px;color:var(--faint)}
+footer a{color:inherit}
 </style>
 </head>
-<body><div class="page" id="app"></div>
+<body>
+<header class="top"><div class="top-in">
+  <a class="brand" href="#todo">Classroom Digest</a>
+  <nav aria-label="Sections">
+    <a href="#todo" data-tab="todo">To do <span class="count" id="todo-count" hidden></span></a>
+    <a href="#updates" data-tab="updates">Updates</a>
+    <a href="#grades" data-tab="grades">Grades</a>
+    <a href="#claude" data-tab="claude">Claude</a>
+    <a href="#settings" data-tab="settings">Settings</a>
+  </nav>
+  <a class="who" id="who" href="#settings"></a>
+</div></header>
+<main id="main" tabindex="-1"></main>
+<footer id="foot"></footer>
+<div class="toast" id="toast" role="status" aria-live="polite"><span id="toast-text"></span><button id="toast-undo" type="button">Undo</button></div>
+
 <script>
-let DATA = null;
-// The local app (npm start) adds study buttons; the deployed snapshot has none.
-const APP = false;
-const act=(kind,data,label)=>`<button class="act" data-act="${kind}" ${Object.entries(data).map(([k,v])=>`data-${k}="${esc(v)}"`).join(' ')}>${label}</button>`;
-// A PDF's .txt sidecar and the sync's marker files aren't worth quizzing on.
-const quizzable=(files)=>{const n=new Set(files.map(f=>f.name));return files.filter(f=>!/\.NO-TEXT-LAYER\.md$|^DO-NOT-FEED-TO-AI\.md$|\.(png|jpe?g|gif|csv)$/i.test(f.name)&&!(/\.txt$/i.test(f.name)&&n.has(f.name.replace(/\.txt$/i,'.pdf'))));};
-const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const d=s=>s?new Date(s):null;
-const fmtDay=x=>x.toLocaleDateString(undefined,{weekday:'short',month:'short',day:'numeric'});
-const fmtTime=x=>x.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
-const mid=x=>new Date(x.getFullYear(),x.getMonth(),x.getDate());
+const MCP_URL = location.origin + '/mcp';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const I = {
+  hide:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.9 4.24A9.1 9.1 0 0 1 12 4c7 0 10 8 10 8a13.2 13.2 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.5 13.5 0 0 0 2 12s3 8 10 8a9.7 9.7 0 0 0 5.39-1.61"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="m2 2 20 20"/></svg>',
+  show:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3-8 10-8 10 8 10 8-3 8-10 8S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>',
+  copy:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+  check:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>',
+  ext:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>',
+  chev:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>',
+  mail:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>',
+};
 
-function rel(due,now){
-  if(!due) return 'no due date';
-  const h=(due-now)/36e5;
-  if(h<0){const n=Math.floor(-h/24);return n>=1?`${n} day${n>1?'s':''} overdue`:`${Math.floor(-h)}h overdue`;}
-  if(h<=24) return `in ${Math.max(1,Math.round(h))}h · ${fmtDay(due)} ${fmtTime(due)}`;
-  return `${fmtDay(due)} · ${fmtTime(due)}`;
+let DATA = null, ERR = null, courseFilter = 'all';
+const ORDER = ['overdue','today','soon','week','later','undated'];
+const LABEL = {overdue:'Overdue',today:'Next 24 hours',soon:'Next 3 days',week:'This week',later:'Later',undated:'No due date'};
+const DAYS = [['Mon',1],['Tue',2],['Wed',3],['Thu',4],['Fri',5],['Sat',6],['Sun',0]];
+const INCLUDE = [
+  ['overdue','Overdue work'],['today','Due in the next 24 hours'],['soon','Due in the next 3 days'],['week','Due this week'],
+  ['later','Due later (within 2 weeks)'],['undated','Work with no due date'],['mentioned','Dates mentioned in announcements'],
+  ['announcements','New announcements'],['grades','New grades'],
+];
+const detectedTz = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Kolkata'; } catch { return 'Asia/Kolkata'; } })();
+
+const d = s => s ? new Date(s) : null;
+const fmtDay = x => x.toLocaleDateString(undefined, {weekday:'short', day:'numeric', month:'short'});
+const fmtTime = x => x.toLocaleTimeString(undefined, {hour:'numeric', minute:'2-digit'});
+const mid = x => new Date(x.getFullYear(), x.getMonth(), x.getDate());
+function rel(due, now = new Date()) {
+  if (!due) return 'No due date';
+  const h = (due - now) / 36e5;
+  if (h < 0) { const n = Math.floor(-h / 24); return n >= 1 ? `${n} day${n > 1 ? 's' : ''} overdue` : `${Math.max(1, Math.floor(-h))}h overdue`; }
+  if (h <= 24) return `Due in ${Math.max(1, Math.round(h))}h · ${fmtTime(due)}`;
+  const days = Math.round((mid(due) - mid(now)) / 864e5);
+  return `${days === 1 ? 'Tomorrow' : fmtDay(due)} · ${fmtTime(due)}`;
 }
-const LABEL={overdue:'Overdue',today:'Next 24 hours',soon:'Next 3 days',week:'This week',later:'Later',undated:'No due date'};
-const ORDER=['overdue','today','soon','week','later','undated'];
+const hourLabel = h => h === 0 ? 'midnight' : h === 12 ? 'noon' : `${h % 12} ${h < 12 ? 'am' : 'pm'}`;
 
-function render(){
-  const now=new Date(), P=DATA, o=[];
-  if(!P){document.getElementById('app').innerHTML='<p class="loading">Loading your courses from Classroom…</p>';return;}
-
-  const open=ORDER.reduce((n,b)=>n+(P.buckets[b]||[]).length,0);
-  const overdue=(P.buckets.overdue||[]).length, dueToday=(P.buckets.today||[]).length;
-  const head=overdue?`${overdue} overdue`:dueToday?`${dueToday} due ${P.evening?'tomorrow':'today'}`:open?'Nothing urgent':'All clear';
-
-  o.push(toolbar());
-  o.push(`<div class="eyebrow">${esc(now.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}))}${P.week&&P.week.number?' · Week '+P.week.number:''}</div>`);
-  o.push(`<h1>${esc(head)}</h1>`);
-  o.push(`<p class="sub">${open} open ${open===1?'item':'items'} across your courses.</p>`);
-
-  if(P.stale) o.push(`<div class="callout red"><span class="ico">🗓️</span><div class="body">${esc(P.stale)}</div></div>`);
-
-  for(const u of P.unresolved)
-    o.push(`<div class="callout amber"><span class="ico">⏳</span><div class="body"><b>${esc(u.code)}</b> discussion session is still <b>${esc(u.status)}</b> — ${esc(u.slot.day)} ${esc(u.slot.start)}–${esc(u.slot.end)}, ${esc(u.faculty)}.</div></div>`);
-
-  // Classes
-  const c=P.classes, row=s=>`<div class="line"><span class="t">${esc(s.start)}–${esc(s.end)}</span><span class="name">${esc(s.code)}</span><span class="tag">${esc(s.kind)}</span>${s.status&&s.status!=='Confirmed'?`<span class="tag">${esc(s.status)}</span>`:''}</div>`;
-  if(c.upcoming){
-    o.push(`<h2>Next classes</h2><p class="hint">${esc(d(c.upcoming.date).toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'}))}</p>`);
-    o.push(c.upcoming.sessions.map(row).join(''));
-  } else if(c.today.length||c.tomorrow.length){
-    o.push(`<h2>${P.evening?'Tomorrow':'Today'}</h2>`);
-    o.push(c.today.length?c.today.map(row).join(''):`<div class="empty">No classes ${P.evening?'tomorrow':'today'}.</div>`);
-    if(c.tomorrow.length){o.push(`<h2>${P.evening?'The day after':'Tomorrow'}</h2>`+c.tomorrow.map(row).join(''));}
-  }
-
-  // Study: one test-prep button per course with synced files.
-  if(APP&&P.library&&P.library.length){
-    o.push('<h2>Study</h2><p class="hint">Uses your course files and syllabus. Runs on your own Claude key.</p>');
-    for(const c of P.library)
-      o.push(`<div class="line"><span class="name" style="flex:1">${esc(c.course)}</span>${act('prep',{course:c.course,label:c.course+' · test prep'},'Prepare me for a test')}</div>`);
-  }
-
-  // Tasks
-  const anyTasks=ORDER.some(b=>(P.buckets[b]||[]).length);
-  if(anyTasks){
-    o.push('<h2>To do</h2>');
-    for(const b of ORDER){
-      const list=P.buckets[b]||[]; if(!list.length) continue;
-      o.push(`<p class="hint">${esc(LABEL[b])}</p>`);
-      for(const i of list)
-        o.push(`<div class="task"><span class="dot ${b}"></span><div><a href="${esc(i.link)}" target="_blank" rel="noopener">${esc(i.title)}</a>
-          <div class="meta">${esc(i.course)} · ${esc(rel(d(i.due),now))}${i.points?' · '+esc(i.points)+' pts':''}${i.started?' · draft started':''}</div>
-          ${APP?`<div class="acts">${act('help',{link:i.link,label:i.title},'Do this assignment')}</div>`:''}</div></div>`);
-    }
-  }
-
-  // Prose deadlines
-  if(P.mentioned.length){
-    o.push('<h2>Mentioned in announcements</h2><p class="hint">Found in text, not set as Classroom assignments — worth checking.</p>');
-    for(const m of P.mentioned){
-      const n=Math.round((mid(d(m.date))-mid(now))/864e5);
-      o.push(`<div class="callout amber"><span class="ico">📌</span><div class="body"><b>${esc(m.course)}</b> · ${esc(fmtDay(d(m.date)))} (${n===0?'today':n===1?'tomorrow':n<0?Math.abs(n)+' days ago':'in '+n+' days'})
-        <div class="quote">${esc(m.quote)}</div></div></div>`);
-    }
-  }
-
-  // Week
-  if(P.week&&P.week.courses&&P.week.courses.length){
-    o.push(`<h2>Recently posted</h2><p class="hint">${P.week.onBreak?esc(P.week.onBreak):esc(fmtDay(d(P.week.from)))+' – '+esc(fmtDay(d(P.week.to)))}</p>`);
-    for(const w of P.week.courses){
-      o.push(`<details open><summary>${w.link?`<a href="${esc(w.link)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(w.code)}</a>`:esc(w.code)}</summary><div class="inner">
-        ${w.fallback?`<div class="hint" style="margin:0 0 6px">${esc(w.fallback)}</div>`:''}
-        ${w.unofficial?`<div class="hint" style="margin:0 0 6px;color:var(--amber)">No syllabus posted — from announcements only.</div>`:''}
-        ${w.topics.map(t=>{const x=typeof t==='string'?{text:t}:t;
-          return x.link?`<div class="meta"><a href="${esc(x.link)}" target="_blank" rel="noopener" style="color:inherit">${esc(x.text)}</a></div>`
-                        :`<div class="meta">${esc(x.text)}</div>`;}).join('')}
-        ${w.readings.map(r=>`<div class="read"><b>Read</b> · ${esc(r)}</div>`).join('')}
-        ${w.due.map(x=>`<div class="read" style="color:var(--amber)"><b>Due</b> · ${esc(x)}</div>`).join('')}
-        ${w.notes.map(n=>`<div class="read" style="color:var(--red)">${esc(n)}</div>`).join('')}
-      </div></details>`);
-    }
-  }
-
-  if(P.announcements.length){
-    o.push('<h2>New announcements</h2>');
-    for(const a of P.announcements.slice(0,15)){
-      const t=a.text.replace(/\s+/g,' ');
-      o.push(`<details><summary>${esc(t.slice(0,72))}${t.length>72?'…':''}</summary><div class="inner">
-        <div class="meta">${esc(a.course)}${a.at?' · '+esc(fmtDay(d(a.at))):''}</div>
-        <div class="read">${esc(t)}</div>
-        <div style="margin-top:8px"><a href="${esc(a.link)}" target="_blank" rel="noopener" style="font-size:13px;color:var(--blue)">Open in Classroom</a></div>
-      </div></details>`);
-    }
-  }
-
-  if(P.requisites.length){
-    o.push('<h2>Course requirements</h2>');
-    for(const r of P.requisites){
-      o.push(`<details><summary>${r.link?`<a href="${esc(r.link)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(r.code)}</a>`:esc(r.code)}</summary><div class="inner">
-        ${r.note?`<div class="hint" style="margin:0 0 8px;color:var(--amber)">${esc(r.note)}</div>`:''}
-        ${r.grading.length?'':'<div class="hint" style="margin:0 0 8px">No grading breakdown published.</div>'}
-        ${r.grading.map(g=>`<div class="kv"><span>${esc(g.what)}</span><b>${esc(g.weight)}</b></div>`).join('')}
-        ${r.attendance?`<div class="read" style="color:var(--muted)">${esc(r.attendance)}</div>`:''}
-        <ul>${r.items.map(i=>`<li>${esc(i)}</li>`).join('')}</ul></div></details>`);
-    }
-  }
-
-  // Everything Classroom has, on one page, linked back to where it came from.
-  if(P.library&&P.library.length){
-    o.push('<h2>Library</h2><p class="hint">Every file synced from Classroom. Local copies live in <code>courses/</code>.</p>');
-    for(const c of P.library){
-      const n=c.items.reduce((k,i)=>k+i.files.length,0);
-      o.push(`<details><summary>${c.link?`<a href="${esc(c.link)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${esc(c.course)}</a>`:esc(c.course)} <span class="tag">${c.items.length} items · ${n} files</span></summary><div class="inner">`);
-      for(const it of c.items){
-        o.push(`<div style="padding:6px 0;border-top:1px solid var(--line)">
-          <a href="${esc(it.link)}" target="_blank" rel="noopener" style="color:inherit;font-size:13.5px;font-weight:500">${esc(it.title)}</a>
-          <span class="tag" style="margin-left:6px">${esc(it.kind)}</span>
-          ${it.when?`<span class="hint" style="display:inline;margin-left:6px">${esc(fmtDay(d(it.when)))}</span>`:''}
-          ${APP&&quizzable(it.files).length
-            ?quizzable(it.files).map(f=>`<div class="file"><span class="hint" style="margin:0">${esc(f.name)} (${f.kb} KB)</span>${act('quiz',{file:f.path,label:f.name},'Quiz me')}</div>`).join('')
-            :it.files.length?`<div class="hint" style="margin-top:3px">${it.files.map(f=>esc(f.name)+' ('+f.kb+' KB)').join(' · ')}</div>`:'<div class="hint" style="margin-top:3px">no files</div>'}
-        </div>`);
-      }
-      o.push('</div></details>');
-    }
-  }
-
-  if(P.graded.length){
-    o.push('<h2>Recently graded</h2>');
-    for(const g of P.graded.slice(0,8)) o.push(`<div class="kv" style="padding:7px 4px"><span>${esc(g.title)} · ${esc(g.course)}</span><b>${esc(g.grade)}${g.max?'/'+esc(g.max):''}</b></div>`);
-  }
-
-  o.push(`<hr><footer>Loaded live from Google Classroom at ${esc(fmtTime(d(P.generatedAt)))}. Nothing is stored on our side. <a href="/privacy" style="color:inherit">Privacy</a> · <a href="https://github.com/nanj-dnd/classroom-digest" style="color:inherit">Source</a></footer>`);
-  document.getElementById('app').innerHTML=o.join('');
+/* ---------- network ---------- */
+async function post(url, body) {
+  const r = await fetch(url, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body || {})});
+  if (r.status === 401) { location.href = '/'; throw new Error('signed-out'); }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(j.error || 'Something went wrong.');
+  return j;
 }
-let picking=false;
-function toolbar(){
-  const cs=DATA.courses||[], shown=cs.filter(c=>!c.hidden).length;
-  let h=`<div class="bar"><button data-ui="pick">Courses (${shown} of ${cs.length})</button><button data-ui="signout">Sign out</button></div>`;
-  if(picking){
-    h+=`<div class="picker"><div class="hint" style="margin:0 0 6px">Classroom keeps old semesters marked active. Untick the ones you've finished.</div>`+
-      cs.map(c=>`<label><input type="checkbox" value="${esc(c.id)}" ${c.hidden?'':'checked'}><span>${esc(c.name)} <span class="sec">${esc(c.section)}</span></span></label>`).join('')+
-      `<div class="row"><button class="btn primary" data-ui="save">Save</button><button class="btn" data-ui="cancel">Cancel</button></div></div>`;
-  }
-  return h;
+async function load() {
+  ERR = null;
+  try {
+    const r = await fetch('/api/data?tz=' + new Date().getTimezoneOffset());
+    if (r.status === 401) { location.href = '/'; return; }
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.error || 'Something went wrong. Reload to try again.');
+    DATA = j;
+  } catch (e) { ERR = e.message; }
+  render();
 }
-async function post(url,body){return fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})});}
-document.addEventListener('click',async e=>{
-  const b=e.target.closest('[data-ui]'); if(!b) return;
-  const ui=b.dataset.ui;
-  if(ui==='pick'){picking=!picking;render();}
-  else if(ui==='cancel'){picking=false;render();}
-  else if(ui==='signout'){b.disabled=true;await post('/api/signout');location.href='/';}
-  else if(ui==='save'){
-    const hidden=[...document.querySelectorAll('.picker input')].filter(i=>!i.checked).map(i=>i.value);
-    b.disabled=true;b.textContent='Saving…';
-    await post('/api/prefs',{hidden});picking=false;load();
+
+/* ---------- views ---------- */
+const tab = () => (location.hash.slice(1) || 'todo').split('?')[0];
+
+function taskRow(i, bucket) {
+  const late = i.late ? ' · <span class="late">late</span>' : '';
+  return `<li class="row" data-id="${esc(i.id)}">
+    <span class="dot ${bucket}"></span>
+    <div class="body">
+      <a class="title" href="${esc(i.link)}" target="_blank" rel="noopener">${esc(i.title)}</a>
+      <div class="meta">${esc(i.course)} · ${esc(rel(d(i.due)))}${i.points ? ' · ' + esc(i.points) + ' pts' : ''}${i.started ? ' · draft started' : ''}${late}</div>
+    </div>
+    <button class="icon-btn" type="button" data-hide="${esc(i.id)}" aria-label="Hide ${esc(i.title)}">${I.hide}<span>Hide</span></button>
+  </li>`;
+}
+
+function noteRow(m) {
+  const n = Math.round((mid(d(m.date)) - mid(new Date())) / 864e5);
+  const when = n === 0 ? 'today' : n === 1 ? 'tomorrow' : n < 0 ? `${-n} day${n < -1 ? 's' : ''} ago` : `in ${n} days`;
+  return `<li class="row" data-id="${esc(m.id)}">
+    <span class="dot note"></span>
+    <div class="body">
+      <a class="title" href="${esc(m.link)}" target="_blank" rel="noopener">${esc(m.course)} · ${esc(fmtDay(d(m.date)))}</a>
+      <div class="meta">Mentioned in an announcement, ${esc(when)}. Not a Classroom assignment.</div>
+      <div class="quote">${esc(m.quote)}</div>
+    </div>
+    <button class="icon-btn" type="button" data-hide="${esc(m.id)}" aria-label="Hide this date">${I.hide}<span>Hide</span></button>
+  </li>`;
+}
+
+function viewTodo() {
+  const P = DATA, o = [];
+  const visible = (P.courses || []).filter(c => !c.hidden);
+  const matches = i => courseFilter === 'all' || i.courseId === courseFilter;
+  const groups = ORDER.map(b => [b, (P.buckets[b] || []).filter(matches)]).filter(([, l]) => l.length);
+  const notes = (P.mentioned || []).filter(matches);
+  const n = b => (P.buckets[b] || []).filter(matches).length;
+  const parts = [];
+  if (n('overdue')) parts.push(`${n('overdue')} overdue`);
+  if (n('today')) parts.push(`${n('today')} due in 24 hours`);
+  if (n('soon') + n('week')) parts.push(`${n('soon') + n('week')} more this week`);
+  if (n('undated')) parts.push(`${n('undated')} with no due date`);
+
+  o.push(`<h1>To do</h1><p class="lede">${parts.length ? esc(parts.join(' · ')) : 'Nothing open in the next two weeks.'}</p>`);
+  if (visible.length > 1) {
+    o.push(`<div class="chips" role="group" aria-label="Filter by course"><button class="chip" type="button" data-course="all" aria-pressed="${courseFilter === 'all'}">All courses</button>` +
+      visible.map(c => `<button class="chip" type="button" data-course="${esc(c.id)}" aria-pressed="${courseFilter === c.id}">${esc(short(c.name))}</button>`).join('') + '</div>');
+  }
+  if (!groups.length && !notes.length) {
+    o.push(`<p class="empty">Nothing to do here. Hidden tasks are below; hidden courses are in <a href="#settings">Settings</a>.</p>`);
+  }
+  for (const [b, list] of groups) {
+    o.push(`<h2>${LABEL[b]} <span class="n">${list.length}</span></h2><ul class="list">${list.map(i => taskRow(i, b)).join('')}</ul>`);
+  }
+  if (notes.length) {
+    o.push(`<h2>Dates in announcements <span class="n">${notes.length}</span></h2><p class="hint">Found in what professors wrote, not set up as assignments. Worth a check.</p><ul class="list">${notes.map(noteRow).join('')}</ul>`);
+  }
+  if ((P.hidden || []).length) {
+    o.push(`<details class="more"><summary>${I.chev} Hidden tasks (${P.hidden.length})</summary><ul class="list">` +
+      P.hidden.map(h => `<li class="row"><span class="dot"></span><div class="body"><div class="title" style="font-weight:500">${esc(h.title)}</div><div class="meta">${esc(h.course)}</div></div>
+        <button class="icon-btn" type="button" style="opacity:1" data-unhide="${esc(h.id)}">${I.show}<span>Show again</span></button></li>`).join('') + '</ul></details>');
+  }
+  return o.join('');
+}
+
+const short = name => String(name || '').replace(/\s*\([^)]*\)\s*$/, '').trim() || name;
+
+function viewUpdates() {
+  const P = DATA, o = ['<h1>Updates</h1><p class="lede">Announcements and new posts from the last two weeks.</p>'];
+  o.push('<h2>Announcements</h2>');
+  if (!P.announcements.length) o.push('<p class="empty">No announcements in the last two weeks.</p>');
+  else o.push('<div>' + P.announcements.map((a, k) => `<article class="post" id="a${k}">
+      <div class="meta">${esc(a.course)}${a.at ? ' · ' + esc(fmtDay(d(a.at))) : ''}</div>
+      <p>${esc(a.text)}</p>
+      <div class="links">${a.text.length > 280 ? `<button type="button" data-expand="a${k}">Show all</button>` : ''}<a href="${esc(a.link)}" target="_blank" rel="noopener">Open in Classroom</a></div>
+    </article>`).join('') + '</div>');
+  const recent = (P.week && P.week.courses) || [];
+  o.push('<h2>Recently posted</h2>');
+  if (!recent.length) o.push('<p class="empty">Nothing new posted in the last 10 days.</p>');
+  for (const c of recent) {
+    o.push(`<h3 style="margin-top:18px">${esc(c.code)}</h3><ul class="list">` + c.topics.map(t =>
+      `<li class="row"><span class="dot" style="background:var(--line)"></span><div class="body"><a class="title" style="font-weight:500" href="${esc(t.link)}" target="_blank" rel="noopener">${esc(t.text)}</a></div></li>`).join('') + '</ul>');
+  }
+  return o.join('');
+}
+
+function viewGrades() {
+  const g = DATA.graded || [];
+  if (!g.length) return '<h1>Grades</h1><p class="empty">No graded work returned yet.</p>';
+  return `<h1>Grades</h1><p class="lede">Returned work, newest first.</p>
+    <table><thead><tr><th>Assignment</th><th class="num">Grade</th></tr></thead><tbody>` +
+    g.map(x => `<tr><td>${esc(x.title)}<div class="meta">${esc(x.course)}${x.at ? ' · ' + esc(fmtDay(d(x.at))) : ''}</div></td>
+      <td class="num"><b>${esc(x.grade)}</b>${x.max ? `<span class="meta" style="display:inline"> / ${esc(x.max)}</span>` : ''}</td></tr>`).join('') + '</tbody></table>';
+}
+
+function viewClaude() {
+  return `<h1>Connect Claude</h1>
+  <p class="lede">Add Classroom Digest to your own Claude and ask it about your courses in plain words. Claude reads your Classroom directly, on your Claude plan. No API key needed.</p>
+  <div class="section">
+    <h3>In claude.ai or the Claude app</h3>
+    <ol class="steps">
+      <li>Open <b>Settings → Connectors</b> and choose <b>Add custom connector</b>.</li>
+      <li>Name it <b>Classroom</b> and paste this URL:</li>
+    </ol>
+    <div class="field"><code id="mcp-url">${esc(MCP_URL)}</code><button class="btn" type="button" data-copy="mcp-url">${I.copy}<span>Copy</span></button></div>
+    <ol class="steps" start="3">
+      <li>Click <b>Connect</b>, confirm on this site, then sign in with the same Google account.</li>
+    </ol>
+    <div class="actions"><a class="btn primary" href="https://claude.ai/settings/connectors" target="_blank" rel="noopener">Open Claude connector settings ${I.ext}</a></div>
+  </div>
+  <div class="section">
+    <h3>In Claude Code</h3>
+    <p class="hint">Run this in a terminal, then type <b>/mcp</b> in Claude Code to sign in.</p>
+    <div class="field"><code id="cc-cmd">claude mcp add --transport http classroom ${esc(MCP_URL)}</code><button class="btn" type="button" data-copy="cc-cmd">${I.copy}<span>Copy</span></button></div>
+  </div>
+  <div class="section">
+    <h3>Things to ask</h3>
+    <ul class="ask"><li>What's due this week, and what should I start first?</li><li>Did any professor mention a deadline that isn't on Classroom?</li><li>Summarise the last two weeks of announcements for each course.</li></ul>
+    <p class="hint" style="margin-top:14px">Claude can read assignments, announcements and material titles, but not the files themselves. It can't post or submit anything. Remove the connector in Claude to disconnect.</p>
+  </div>`;
+}
+
+function viewSettings() {
+  const me = DATA.me || {}, r = me.reminders || {}, inc = r.include || {};
+  const tz = me.hasSettings ? me.tz : detectedTz;
+  let zones = []; try { zones = Intl.supportedValuesOf('timeZone'); } catch {}
+  if (!zones.includes(tz)) zones.unshift(tz);
+  const hidden = DATA.hidden || [];
+  return `<h1>Settings</h1><p class="lede">Changes save as you make them.</p>
+  <div class="section" id="reminders">
+    <div class="switch-row" style="padding-top:0">
+      <div class="lbl"><h3>Email reminders</h3><div>A digest sent to ${esc(me.email || 'your Google address')}.</div></div>
+      <label class="switch"><input type="checkbox" id="r-on" ${r.on ? 'checked' : ''} aria-label="Email reminders"><span></span></label>
+    </div>
+    <div id="r-body" class="${r.on ? '' : 'muted-block'}">
+      <div class="grid">
+        <label>Days</label>
+        <div class="days" role="group" aria-label="Days">${DAYS.map(([l, v]) => `<button class="chip" type="button" data-day="${v}" aria-pressed="${(r.days || []).includes(v)}">${l}</button>`).join('')}</div>
+        <label for="r-hour">Time</label>
+        <div><select id="r-hour">${Array.from({length:24}, (_, h) => `<option value="${h}" ${h === r.hour ? 'selected' : ''}>${hourLabel(h)}</option>`).join('')}</select>
+          <span class="hint" style="margin:0 0 0 8px">Arrives within the hour.</span></div>
+        <label for="r-tz">Time zone</label>
+        <select id="r-tz">${zones.map(z => `<option ${z === tz ? 'selected' : ''}>${esc(z)}</option>`).join('')}</select>
+      </div>
+      <h2 style="margin-top:26px">What to include</h2>
+      <div class="checks">${INCLUDE.map(([k, l]) => `<label class="check"><input type="checkbox" data-inc="${k}" ${inc[k] ? 'checked' : ''}>${esc(l)}</label>`).join('')}</div>
+      <label class="check" style="margin-top:10px"><input type="checkbox" id="r-skip" ${r.skipEmpty !== false ? 'checked' : ''}>Don't send an email when there's nothing to report</label>
+      <div class="actions"><button class="btn" type="button" id="r-test">${I.mail}<span>Send me one now</span></button><span class="status" id="r-status"></span></div>
+    </div>
+  </div>
+  <div class="section">
+    <h3>Courses</h3>
+    <p class="hint">Classroom keeps old semesters marked active. Switch off the ones you've finished; they disappear everywhere, including emails.</p>
+    <div>${(DATA.courses || []).map(c => `<div class="course-row"><div><div>${esc(short(c.name))}</div>${c.section ? `<div class="sec">${esc(c.section)}</div>` : ''}</div>
+      <label class="switch"><input type="checkbox" data-course-toggle="${esc(c.id)}" ${c.hidden ? '' : 'checked'} aria-label="Show ${esc(c.name)}"><span></span></label></div>`).join('')}</div>
+    <div class="status" id="c-status"></div>
+  </div>
+  <div class="section">
+    <h3>Hidden tasks</h3>
+    ${hidden.length ? '<ul class="list">' + hidden.map(h => `<li class="row"><div class="body"><div>${esc(h.title)}</div><div class="meta">${esc(h.course)}</div></div>
+      <button class="icon-btn" type="button" style="opacity:1" data-unhide="${esc(h.id)}">${I.show}<span>Show again</span></button></li>`).join('') + '</ul>'
+      : '<p class="hint">None. Hide a task from To do and it shows up here.</p>'}
+  </div>
+  <div class="section">
+    <h3>Account</h3>
+    <p class="hint">Signed in as ${esc(me.email || 'your Google account')}. Your settings are stored encrypted; your Google sign-in is only kept on the server while email reminders are on.</p>
+    <div class="actions"><button class="btn" type="button" data-ui="signout">Sign out</button><button class="btn danger" type="button" id="delete">Delete my data</button></div>
+  </div>`;
+}
+
+function skeleton() {
+  return '<h1>To do</h1><p class="lede">Loading your courses from Classroom…</p>' +
+    Array.from({length:6}, (_, k) => `<div class="row" style="pointer-events:none"><span class="dot" style="background:var(--line)"></span><div class="body"><div class="sk" style="width:${[62,48,70,55,40,66][k]}%"></div><div class="sk" style="width:30%;height:11px;margin-top:8px"></div></div></div>`).join('');
+}
+
+function render() {
+  const t = tab();
+  document.querySelectorAll('nav a').forEach(a => a.setAttribute('aria-current', a.dataset.tab === t ? 'page' : 'false'));
+  const main = document.getElementById('main');
+  if (t === 'claude') { main.innerHTML = viewClaude(); }
+  else if (ERR) { main.innerHTML = `<h1>Couldn't load</h1><p class="lede">${esc(ERR)}</p><div class="actions"><button class="btn primary" type="button" onclick="location.reload()">Try again</button><button class="btn" type="button" data-ui="signout">Sign out</button></div>`; }
+  else if (!DATA) { main.innerHTML = skeleton(); }
+  else main.innerHTML = ({todo:viewTodo, updates:viewUpdates, grades:viewGrades, settings:viewSettings}[t] || viewTodo)();
+  if (DATA) {
+    const urgent = (DATA.buckets.overdue || []).length + (DATA.buckets.today || []).length;
+    const c = document.getElementById('todo-count'); c.hidden = !urgent; c.textContent = urgent;
+    document.getElementById('who').textContent = (DATA.me && DATA.me.email) || '';
+    document.getElementById('foot').innerHTML = `Loaded live from Google Classroom at ${esc(fmtTime(d(DATA.generatedAt)))}. <a href="/privacy">Privacy</a> · <a href="https://github.com/nanj-dnd/classroom-digest" target="_blank" rel="noopener">Source</a>`;
+  }
+}
+window.addEventListener('hashchange', () => { render(); window.scrollTo(0, 0); });
+
+/* ---------- toast ---------- */
+let toastTimer, toastUndo;
+function toast(text, undo) {
+  const el = document.getElementById('toast');
+  document.getElementById('toast-text').textContent = text;
+  document.getElementById('toast-undo').hidden = !undo;
+  toastUndo = undo; el.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => el.classList.remove('show'), 5000);
+}
+document.getElementById('toast-undo').addEventListener('click', () => { document.getElementById('toast').classList.remove('show'); toastUndo && toastUndo(); });
+
+/* ---------- hide / unhide ---------- */
+function findTask(id) {
+  for (const b of ORDER) { const k = (DATA.buckets[b] || []).findIndex(i => i.id === id); if (k >= 0) return {b, k, item: DATA.buckets[b][k]}; }
+  const k = DATA.mentioned.findIndex(m => m.id === id);
+  return k >= 0 ? {b: 'mentioned', k, item: DATA.mentioned[k]} : null;
+}
+async function hide(id) {
+  const f = findTask(id); if (!f) return;
+  const list = f.b === 'mentioned' ? DATA.mentioned : DATA.buckets[f.b];
+  list.splice(f.k, 1);
+  const title = f.b === 'mentioned' ? `${f.item.course} · ${fmtDay(d(f.item.date))}` : f.item.title;
+  DATA.hidden = [{id, title, course: f.item.course, link: f.item.link}, ...(DATA.hidden || [])];
+  render();
+  toast(`Hidden “${title}”`, () => unhide(id, f));
+  try { const j = await post('/api/prefs', {hide: {id, title, course: f.item.course, link: f.item.link}}); DATA.hidden = j.hidden; }
+  catch (e) { list.splice(f.k, 0, f.item); DATA.hidden = DATA.hidden.filter(h => h.id !== id); render(); toast(e.message); }
+}
+async function unhide(id, restore) {
+  DATA.hidden = (DATA.hidden || []).filter(h => h.id !== id);
+  if (restore) { (restore.b === 'mentioned' ? DATA.mentioned : DATA.buckets[restore.b] ||= []).splice(restore.k, 0, restore.item); render(); }
+  try { const j = await post('/api/prefs', {unhide: id}); DATA.hidden = j.hidden; if (!restore) await load(); else render(); }
+  catch (e) { toast(e.message); }
+}
+
+/* ---------- settings ---------- */
+function readReminders() {
+  return {
+    on: document.getElementById('r-on').checked,
+    days: [...document.querySelectorAll('[data-day]')].filter(b => b.getAttribute('aria-pressed') === 'true').map(b => +b.dataset.day),
+    hour: +document.getElementById('r-hour').value,
+    include: Object.fromEntries([...document.querySelectorAll('[data-inc]')].map(i => [i.dataset.inc, i.checked])),
+    skipEmpty: document.getElementById('r-skip').checked,
+  };
+}
+let saveTimer;
+function saveReminders() {
+  const st = document.getElementById('r-status'); st.className = 'status'; st.textContent = 'Saving…';
+  document.getElementById('r-body').className = document.getElementById('r-on').checked ? '' : 'muted-block';
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(async () => {
+    const reminders = readReminders();
+    if (reminders.on && !reminders.days.length) { st.className = 'status err'; st.textContent = 'Pick at least one day.'; return; }
+    try {
+      const j = await post('/api/prefs', {reminders, tz: document.getElementById('r-tz').value});
+      DATA.me = {...DATA.me, ...j.me, hasSettings: true};
+      st.className = 'status ok';
+      st.textContent = reminders.on ? `Saved. Next one ${nextSend(reminders, j.me.tz)}.` : 'Saved. Reminders are off.';
+    } catch (e) { st.className = 'status err'; st.textContent = e.message; }
+  }, 350);
+}
+function nextSend(r, tz) {
+  const now = new Date();
+  for (let k = 0; k < 8; k++) {
+    const day = new Date(now.getTime() + k * 864e5);
+    const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', {timeZone: tz, weekday: 'short', hour: 'numeric', hourCycle: 'h23'}).formatToParts(day).map(p => [p.type, p.value]));
+    const wd = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].indexOf(parts.weekday);
+    if (!r.days.includes(wd)) continue;
+    if (k === 0 && +parts.hour >= r.hour) continue;
+    const label = k === 0 ? 'today' : k === 1 ? 'tomorrow' : day.toLocaleDateString(undefined, {weekday: 'long', timeZone: tz});
+    return `${label} around ${hourLabel(r.hour)}`;
+  }
+  return 'soon';
+}
+
+document.addEventListener('change', async e => {
+  const t = e.target;
+  if (t.id === 'r-on' || t.id === 'r-hour' || t.id === 'r-tz' || t.id === 'r-skip' || t.dataset.inc) return saveReminders();
+  if (t.dataset.courseToggle) {
+    const hiddenCourses = [...document.querySelectorAll('[data-course-toggle]')].filter(i => !i.checked).map(i => i.dataset.courseToggle);
+    const st = document.getElementById('c-status'); st.className = 'status'; st.textContent = 'Saving…';
+    try { await post('/api/prefs', {hiddenCourses}); st.className = 'status ok'; st.textContent = 'Saved.'; courseFilter = 'all'; load(); }
+    catch (err) { st.className = 'status err'; st.textContent = err.message; }
   }
 });
-async function load(){
-  DATA=null;render();
-  let r;
-  try{r=await fetch('/api/data?tz='+new Date().getTimezoneOffset());}catch{return fail('Could not reach the server. Check your connection and reload.');}
-  if(r.status===401){location.href='/';return;}
-  const j=await r.json().catch(()=>({}));
-  if(!r.ok) return fail(j.error||'Something went wrong. Reload to try again.');
-  DATA=j;render();
-}
-function fail(m){document.getElementById('app').innerHTML=`<p class="loading">${esc(m)}</p><p><button class="btn" onclick="location.reload()">Reload</button> <button class="btn" data-ui="signout">Sign out</button></p>`;}
+
+let deleteArmed = false;
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.hide) return hide(b.dataset.hide);
+  if (b.dataset.unhide) { b.disabled = true; return unhide(b.dataset.unhide); }
+  if (b.dataset.course) { courseFilter = b.dataset.course; return render(); }
+  if (b.dataset.day !== undefined) { b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); return saveReminders(); }
+  if (b.dataset.expand) { document.getElementById(b.dataset.expand).classList.add('open'); return b.remove(); }
+  if (b.dataset.copy) {
+    try { await navigator.clipboard.writeText(document.getElementById(b.dataset.copy).textContent); b.innerHTML = I.check + '<span>Copied</span>'; setTimeout(() => b.innerHTML = I.copy + '<span>Copy</span>', 1800); }
+    catch { toast('Copy failed. Select the text and copy it.'); }
+    return;
+  }
+  if (b.id === 'r-test') {
+    const st = document.getElementById('r-status'); b.disabled = true; st.className = 'status'; st.textContent = 'Sending…';
+    try { const j = await post('/api/test-email'); st.className = 'status ok'; st.textContent = `Sent to ${j.to}.`; }
+    catch (err) { st.className = 'status err'; st.textContent = err.message; }
+    b.disabled = false; return;
+  }
+  if (b.dataset.ui === 'signout') { b.disabled = true; await post('/api/signout').catch(() => {}); location.href = '/'; return; }
+  if (b.id === 'delete') {
+    if (!deleteArmed) { deleteArmed = true; b.classList.add('armed'); b.textContent = 'Click again to delete everything'; setTimeout(() => { deleteArmed = false; if (b.isConnected) { b.classList.remove('armed'); b.textContent = 'Delete my data'; } }, 4000); return; }
+    b.disabled = true; b.textContent = 'Deleting…';
+    try { await post('/api/delete-account'); location.href = '/'; } catch (err) { toast(err.message); b.disabled = false; b.textContent = 'Delete my data'; }
+  }
+});
+
+render();
 load();
-</script></body></html>
+</script>
+</body>
+</html>
