@@ -32,7 +32,7 @@ function triage(courses, now) {
       const s = w.submission, due = dueAt(w);
       if (s && DONE.has(s.state)) {
         if (s.state === 'RETURNED' && s.assignedGrade != null) {
-          graded.push({ course: c.name, title: w.title, grade: s.assignedGrade, max: w.maxPoints ?? null, at: s.updateTime || '' });
+          graded.push({ courseId: c.id, course: c.name, title: w.title, grade: s.assignedGrade, max: w.maxPoints ?? null, at: s.updateTime || '' });
         }
         continue;
       }
@@ -122,7 +122,7 @@ function recentlyPosted(courses, now) {
       ...c.materials.map((m) => ({ text: m.title || 'Untitled material', link: m.alternateLink, at: m.creationTime })),
       ...c.coursework.map((w) => ({ text: w.title || 'Untitled assignment', link: w.alternateLink, at: w.creationTime })),
     ].filter((p) => Date.parse(p.at || '') >= cutoff).sort((a, b) => b.at.localeCompare(a.at));
-    if (posts.length) out.push({ code: c.name, link: c.link, topics: posts.slice(0, 8).map(({ text, link }) => ({ text, link })), readings: [], due: [], notes: [] });
+    if (posts.length) out.push({ courseId: c.id, code: c.name, link: c.link, topics: posts.slice(0, 8).map(({ text, link }) => ({ text, link })), readings: [], due: [], notes: [] });
   }
   return out;
 }
@@ -132,7 +132,7 @@ export function buildPayload(courses, now, tz) {
   const since = now.getTime() - 14 * 24 * HOUR;
   const announcements = courses.flatMap((c) => c.announcements
     .filter((a) => Date.parse(a.updateTime || a.creationTime || '') >= since)
-    .map((a) => ({ course: c.name, text: (a.text || '').trim().slice(0, 600), link: a.alternateLink, at: a.updateTime || a.creationTime })))
+    .map((a) => ({ courseId: c.id, course: c.name, text: (a.text || '').trim().slice(0, 600), link: a.alternateLink, at: a.updateTime || a.creationTime })))
     .sort((a, b) => b.at.localeCompare(a.at));
   const recent = recentlyPosted(courses, now);
   return {

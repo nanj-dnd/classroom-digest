@@ -70,6 +70,8 @@ h3{font-size:16px;font-weight:600;margin:0 0 4px;letter-spacing:-.01em}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}
 .chip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:5px 12px;font-size:13px;cursor:pointer;color:var(--muted);transition:background .15s,border-color .15s,color .15s}
 .chip:hover{background:var(--hover);color:var(--ink)}
+.classbar{margin:0 0 4px}
+.classbar + table,.classbar + .empty{margin-top:20px}
 .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 
 /* task rows */
@@ -210,7 +212,18 @@ const I = {
   mail:'<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>',
 };
 
-let DATA = null, ERR = null, courseFilter = 'all';
+let DATA = null, ERR = null;
+// One class filter for every tab, remembered on this device only.
+let courseFilter = (() => { try { return localStorage.getItem('cd.class') || 'all'; } catch { return 'all'; } })();
+function setClass(id) { courseFilter = id; try { localStorage.setItem('cd.class', id); } catch {} }
+const inClass = x => courseFilter === 'all' || x.courseId === courseFilter;
+const className = () => { const c = (DATA.courses || []).find(c => c.id === courseFilter); return c ? short(c.name) : ''; };
+function classBar() {
+  const visible = (DATA.courses || []).filter(c => !c.hidden);
+  if (visible.length < 2) return '';
+  return `<div class="chips classbar" role="group" aria-label="Filter by class"><button class="chip" type="button" data-course="all" aria-pressed="${courseFilter === 'all'}">All classes</button>` +
+    visible.map(c => `<button class="chip" type="button" data-course="${esc(c.id)}" aria-pressed="${courseFilter === c.id}">${esc(short(c.name))}</button>`).join('') + '</div>';
+}
 const ORDER = ['overdue','today','soon','week','later','undated'];
 const LABEL = {overdue:'Overdue',today:'Next 24 hours',soon:'Next 3 days',week:'This week',later:'Later',undated:'No due date'};
 const DAYS = [['Mon',1],['Tue',2],['Wed',3],['Thu',4],['Fri',5],['Sat',6],['Sun',0]];
@@ -251,6 +264,7 @@ async function load() {
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(j.error || 'Something went wrong. Reload to try again.');
     DATA = j;
+    if (courseFilter !== 'all' && !(DATA.courses || []).some(c => c.id === courseFilter && !c.hidden)) setClass('all');
   } catch (e) { ERR = e.message; }
   render();
 }
@@ -286,8 +300,7 @@ function noteRow(m) {
 
 function viewTodo() {
   const P = DATA, o = [];
-  const visible = (P.courses || []).filter(c => !c.hidden);
-  const matches = i => courseFilter === 'all' || i.courseId === courseFilter;
+  const matches = inClass;
   const groups = ORDER.map(b => [b, (P.buckets[b] || []).filter(matches)]).filter(([, l]) => l.length);
   const notes = (P.mentioned || []).filter(matches);
   const n = b => (P.buckets[b] || []).filter(matches).length;
@@ -297,11 +310,8 @@ function viewTodo() {
   if (n('soon') + n('week')) parts.push(`${n('soon') + n('week')} more this week`);
   if (n('undated')) parts.push(`${n('undated')} with no due date`);
 
-  o.push(`<h1>To do</h1><p class="lede">${parts.length ? esc(parts.join(' · ')) : 'Nothing open in the next two weeks.'}</p>`);
-  if (visible.length > 1) {
-    o.push(`<div class="chips" role="group" aria-label="Filter by course"><button class="chip" type="button" data-course="all" aria-pressed="${courseFilter === 'all'}">All courses</button>` +
-      visible.map(c => `<button class="chip" type="button" data-course="${esc(c.id)}" aria-pressed="${courseFilter === c.id}">${esc(short(c.name))}</button>`).join('') + '</div>');
-  }
+  o.push(`<h1>To do</h1><p class="lede">${parts.length ? esc(parts.join(' · ')) : `Nothing open in the next two weeks${courseFilter === 'all' ? '' : ' for ' + esc(className())}.`}</p>`);
+  o.push(classBar());
   if (!groups.length && !notes.length) {
     o.push(`<p class="empty">Nothing to do here. Hidden tasks are below; hidden courses are in <a href="#settings">Settings</a>.</p>`);
   }
@@ -322,15 +332,16 @@ function viewTodo() {
 const short = name => String(name || '').replace(/\s*\([^)]*\)\s*$/, '').trim() || name;
 
 function viewUpdates() {
-  const P = DATA, o = ['<h1>Updates</h1><p class="lede">Announcements and new posts from the last two weeks.</p>'];
+  const P = DATA, o = ['<h1>Updates</h1><p class="lede">Announcements and new posts from the last two weeks.</p>', classBar()];
+  const ann = P.announcements.filter(inClass);
   o.push('<h2>Announcements</h2>');
-  if (!P.announcements.length) o.push('<p class="empty">No announcements in the last two weeks.</p>');
-  else o.push('<div>' + P.announcements.map((a, k) => `<article class="post" id="a${k}">
+  if (!ann.length) o.push(`<p class="empty">No announcements in the last two weeks${courseFilter === 'all' ? '' : ' for ' + esc(className())}.</p>`);
+  else o.push('<div>' + ann.map((a, k) => `<article class="post" id="a${k}">
       <div class="meta">${esc(a.course)}${a.at ? ' · ' + esc(fmtDay(d(a.at))) : ''}</div>
       <p>${esc(a.text)}</p>
       <div class="links">${a.text.length > 280 ? `<button type="button" data-expand="a${k}">Show all</button>` : ''}<a href="${esc(a.link)}" target="_blank" rel="noopener">Open in Classroom</a></div>
     </article>`).join('') + '</div>');
-  const recent = (P.week && P.week.courses) || [];
+  const recent = ((P.week && P.week.courses) || []).filter(inClass);
   o.push('<h2>Recently posted</h2>');
   if (!recent.length) o.push('<p class="empty">Nothing new posted in the last 10 days.</p>');
   for (const c of recent) {
@@ -341,9 +352,10 @@ function viewUpdates() {
 }
 
 function viewGrades() {
-  const g = DATA.graded || [];
-  if (!g.length) return '<h1>Grades</h1><p class="empty">No graded work returned yet.</p>';
-  return `<h1>Grades</h1><p class="lede">Returned work, newest first.</p>
+  const g = (DATA.graded || []).filter(inClass);
+  const head = `<h1>Grades</h1><p class="lede">Returned work, newest first.</p>${classBar()}`;
+  if (!g.length) return `${head}<p class="empty">No graded work returned yet${courseFilter === 'all' ? '' : ' for ' + esc(className())}.</p>`;
+  return `${head}
     <table><thead><tr><th>Assignment</th><th class="num">Grade</th></tr></thead><tbody>` +
     g.map(x => `<tr><td>${esc(x.title)}<div class="meta">${esc(x.course)}${x.at ? ' · ' + esc(fmtDay(d(x.at))) : ''}</div></td>
       <td class="num"><b>${esc(x.grade)}</b>${x.max ? `<span class="meta" style="display:inline"> / ${esc(x.max)}</span>` : ''}</td></tr>`).join('') + '</tbody></table>';
@@ -438,7 +450,7 @@ function render() {
   else if (!DATA) { main.innerHTML = skeleton(); }
   else main.innerHTML = ({todo:viewTodo, updates:viewUpdates, grades:viewGrades, settings:viewSettings}[t] || viewTodo)();
   if (DATA) {
-    const urgent = (DATA.buckets.overdue || []).length + (DATA.buckets.today || []).length;
+    const urgent = [...(DATA.buckets.overdue || []), ...(DATA.buckets.today || [])].filter(inClass).length;
     const c = document.getElementById('todo-count'); c.hidden = !urgent; c.textContent = urgent;
     document.getElementById('who').textContent = (DATA.me && DATA.me.email) || '';
     document.getElementById('foot').innerHTML = `Loaded live from Google Classroom at ${esc(fmtTime(d(DATA.generatedAt)))}. <a href="/privacy">Privacy</a> · <a href="https://github.com/nanj-dnd/classroom-digest" target="_blank" rel="noopener">Source</a>`;
@@ -527,7 +539,7 @@ document.addEventListener('change', async e => {
   if (t.dataset.courseToggle) {
     const hiddenCourses = [...document.querySelectorAll('[data-course-toggle]')].filter(i => !i.checked).map(i => i.dataset.courseToggle);
     const st = document.getElementById('c-status'); st.className = 'status'; st.textContent = 'Saving…';
-    try { await post('/api/prefs', {hiddenCourses}); st.className = 'status ok'; st.textContent = 'Saved.'; courseFilter = 'all'; load(); }
+    try { await post('/api/prefs', {hiddenCourses}); st.className = 'status ok'; st.textContent = 'Saved.'; load(); }
     catch (err) { st.className = 'status err'; st.textContent = err.message; }
   }
 });
@@ -537,7 +549,7 @@ document.addEventListener('click', async e => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.hide) return hide(b.dataset.hide);
   if (b.dataset.unhide) { b.disabled = true; return unhide(b.dataset.unhide); }
-  if (b.dataset.course) { courseFilter = b.dataset.course; return render(); }
+  if (b.dataset.course) { setClass(b.dataset.course); return render(); }
   if (b.dataset.day !== undefined) { b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); return saveReminders(); }
   if (b.dataset.expand) { document.getElementById(b.dataset.expand).classList.add('open'); return b.remove(); }
   if (b.dataset.copy) {
